@@ -66,4 +66,21 @@
             <url>https://packages.confluent.io/maven/</url>
         </repository>
     </repositories>
+
+    <build>
+        <plugins>
+            <!-- Плагин Spring Boot для сборки исполняемого JAR -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
