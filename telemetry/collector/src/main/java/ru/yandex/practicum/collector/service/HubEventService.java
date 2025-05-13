@@ -1,6 +1,7 @@
 package ru.yandex.practicum.collector.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.collector.model.hub.*;
@@ -10,6 +11,7 @@ import ru.yandex.practicum.kafka.telemetry.event.*;
 import java.time.Instant;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class HubEventService {
@@ -17,8 +19,13 @@ public class HubEventService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void processEvent(HubEvent event) {
-        HubEventAvro avro = mapToAvro(event);
-        kafkaTemplate.send("telemetry.hubs.v1", avro.getHubId(), avro);
+        try {
+            HubEventAvro avro = mapToAvro(event);
+            kafkaTemplate.send("telemetry.hubs.v1", avro.getHubId(), avro);
+        } catch (Exception e) {
+            log.error("Ошибка при обработке события HubEvent: {}", event, e);
+            throw e;
+        }
     }
 
     private HubEventAvro mapToAvro(HubEvent event) {
@@ -85,4 +92,5 @@ public class HubEventService {
         return builder.build();
     }
 }
+
 

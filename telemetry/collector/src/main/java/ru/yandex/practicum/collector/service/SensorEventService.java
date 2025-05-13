@@ -1,6 +1,7 @@
 package ru.yandex.practicum.collector.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.collector.model.*;
@@ -9,6 +10,7 @@ import ru.yandex.practicum.kafka.telemetry.event.*;
 
 import java.time.Instant;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SensorEventService {
@@ -16,8 +18,13 @@ public class SensorEventService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void processEvent(SensorEvent event) {
-        SensorEventAvro avro = mapToAvro(event);
-        kafkaTemplate.send("telemetry.sensors.v1", avro.getId(), avro);
+        try {
+            SensorEventAvro avro = mapToAvro(event);
+            kafkaTemplate.send("telemetry.sensors.v1", avro.getId(), avro);
+        } catch (Exception e) {
+            log.error("Ошибка при обработке события SensorEvent: {}", event, e);
+            throw e;
+        }
     }
 
     private SensorEventAvro mapToAvro(SensorEvent event) {
