@@ -6,7 +6,17 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.collector.model.hub.*;
 import ru.yandex.practicum.collector.model.hub.HubEvent;
-import ru.yandex.practicum.kafka.telemetry.event.*;
+import ru.yandex.practicum.kafka.telemetry.event.ActionTypeAvro;
+import ru.yandex.practicum.kafka.telemetry.event.ConditionOperationAvro;
+import ru.yandex.practicum.kafka.telemetry.event.ConditionTypeAvro;
+import ru.yandex.practicum.kafka.telemetry.event.DeviceActionAvro;
+import ru.yandex.practicum.kafka.telemetry.event.DeviceAddedEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.DeviceRemovedEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.DeviceTypeAvro;
+import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.ScenarioAddedEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.ScenarioConditionAvro;
+import ru.yandex.practicum.kafka.telemetry.event.ScenarioRemovedEventAvro;
 
 import java.time.Instant;
 import java.util.List;
@@ -21,35 +31,34 @@ public class HubEventService {
     public void processEvent(HubEvent event) {
         try {
             HubEventAvro avro = mapToAvro(event);
+            log.info("📤 Отправка HubEvent в Kafka: payload = {}", avro.getPayload().getClass().getName());
             kafkaTemplate.send("telemetry.hubs.v1", avro.getHubId(), avro);
         } catch (Exception e) {
-            log.error("Ошибка при обработке события HubEvent: {}", event, e);
+            log.error("❌ Ошибка при обработке события HubEvent: {}", event, e);
             throw e;
         }
     }
 
     private HubEventAvro mapToAvro(HubEvent event) {
-        long timestamp = event.getTimestamp() != null ? event.getTimestamp().toEpochMilli() : Instant.now().toEpochMilli();
+        long timestamp = event.getTimestamp() != null
+                ? event.getTimestamp().toEpochMilli()
+                : Instant.now().toEpochMilli();
 
-        HubEventAvro.Builder builder = HubEventAvro.newBuilder()
-                .setHubId(event.getHubId())
-                .setTimestamp(timestamp);
+        Object payload;
 
         switch (event.getType()) {
             case DEVICE_ADDED -> {
                 DeviceAddedEvent e = (DeviceAddedEvent) event;
-                DeviceAddedEventAvro payload = DeviceAddedEventAvro.newBuilder()
+                payload = DeviceAddedEventAvro.newBuilder()
                         .setId(e.getId())
                         .setType(DeviceTypeAvro.valueOf(e.getDeviceType().name()))
                         .build();
-                builder.setPayload(payload);
             }
             case DEVICE_REMOVED -> {
                 DeviceRemovedEvent e = (DeviceRemovedEvent) event;
-                DeviceRemovedEventAvro payload = DeviceRemovedEventAvro.newBuilder()
+                payload = DeviceRemovedEventAvro.newBuilder()
                         .setId(e.getId())
                         .build();
-                builder.setPayload(payload);
             }
             case SCENARIO_ADDED -> {
                 ScenarioAddedEvent e = (ScenarioAddedEvent) event;
@@ -71,26 +80,25 @@ public class HubEventService {
                                 .build())
                         .toList();
 
-                ScenarioAddedEventAvro payload = ScenarioAddedEventAvro.newBuilder()
+                payload = ScenarioAddedEventAvro.newBuilder()
                         .setName(e.getName())
                         .setConditions(conditions)
                         .setActions(actions)
                         .build();
-
-                builder.setPayload(payload);
             }
             case SCENARIO_REMOVED -> {
                 ScenarioRemovedEvent e = (ScenarioRemovedEvent) event;
-                ScenarioRemovedEventAvro payload = ScenarioRemovedEventAvro.newBuilder()
+                payload = ScenarioRemovedEventAvro.newBuilder()
                         .setName(e.getName())
                         .build();
-                builder.setPayload(payload);
             }
-            default -> throw new IllegalArgumentException("Unknown hub event type: " + event.getType());
+            default -> throw new IllegalArgumentException("❌ Unknown hub event type: " + event.getType());
         }
 
-        return builder.build();
+        return HubEventAvro.newBuilder()
+                .setHubId(event.getHubId())
+                .setTimestamp(timestamp)
+                .setPayload(payload)
+                .build();
     }
 }
-
-

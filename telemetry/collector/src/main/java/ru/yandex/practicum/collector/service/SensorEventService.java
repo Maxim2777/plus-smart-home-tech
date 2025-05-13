@@ -6,7 +6,13 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.collector.model.*;
 import ru.yandex.practicum.collector.model.SensorEvent;
-import ru.yandex.practicum.kafka.telemetry.event.*;
+import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.ClimateSensorAvro;
+import ru.yandex.practicum.kafka.telemetry.event.LightSensorAvro;
+import ru.yandex.practicum.kafka.telemetry.event.MotionSensorAvro;
+import ru.yandex.practicum.kafka.telemetry.event.SwitchSensorAvro;
+import ru.yandex.practicum.kafka.telemetry.event.TemperatureSensorAvro;
+
 
 import java.time.Instant;
 
@@ -20,66 +26,66 @@ public class SensorEventService {
     public void processEvent(SensorEvent event) {
         try {
             SensorEventAvro avro = mapToAvro(event);
+            log.info("📤 Отправка события в Kafka: payload = {}", avro.getPayload().getClass().getName());
             kafkaTemplate.send("telemetry.sensors.v1", avro.getId(), avro);
         } catch (Exception e) {
-            log.error("Ошибка при обработке события SensorEvent: {}", event, e);
+            log.error("❌ Ошибка при обработке SensorEvent: {}", event, e);
             throw e;
         }
     }
 
     private SensorEventAvro mapToAvro(SensorEvent event) {
-        long timestamp = event.getTimestamp() != null ? event.getTimestamp().toEpochMilli() : Instant.now().toEpochMilli();
+        long timestamp = event.getTimestamp() != null
+                ? event.getTimestamp().toEpochMilli()
+                : Instant.now().toEpochMilli();
 
-        SensorEventAvro.Builder builder = SensorEventAvro.newBuilder()
-                .setId(event.getId())
-                .setHubId(event.getHubId())
-                .setTimestamp(timestamp);
+        Object payload;
 
         switch (event.getType()) {
             case LIGHT_SENSOR_EVENT -> {
                 LightSensorEvent light = (LightSensorEvent) event;
-                LightSensorAvro payload = LightSensorAvro.newBuilder()
+                payload = LightSensorAvro.newBuilder()
                         .setLinkQuality(light.getLinkQuality())
                         .setLuminosity(light.getLuminosity())
                         .build();
-                builder.setPayload(payload);
             }
             case MOTION_SENSOR_EVENT -> {
                 MotionSensorEvent motion = (MotionSensorEvent) event;
-                MotionSensorAvro payload = MotionSensorAvro.newBuilder()
+                payload = MotionSensorAvro.newBuilder()
                         .setLinkQuality(motion.getLinkQuality())
                         .setMotion(motion.isMotion())
                         .setVoltage(motion.getVoltage())
                         .build();
-                builder.setPayload(payload);
             }
             case TEMPERATURE_SENSOR_EVENT -> {
                 TemperatureSensorEvent temp = (TemperatureSensorEvent) event;
-                TemperatureSensorAvro payload = TemperatureSensorAvro.newBuilder()
+                payload = TemperatureSensorAvro.newBuilder()
                         .setTemperatureC(temp.getTemperatureC())
                         .setTemperatureF(temp.getTemperatureF())
                         .build();
-                builder.setPayload(payload);
             }
             case CLIMATE_SENSOR_EVENT -> {
                 ClimateSensorEvent climate = (ClimateSensorEvent) event;
-                ClimateSensorAvro payload = ClimateSensorAvro.newBuilder()
+                payload = ClimateSensorAvro.newBuilder()
                         .setTemperatureC(climate.getTemperatureC())
                         .setHumidity(climate.getHumidity())
                         .setCo2Level(climate.getCo2Level())
                         .build();
-                builder.setPayload(payload);
             }
             case SWITCH_SENSOR_EVENT -> {
                 SwitchSensorEvent sw = (SwitchSensorEvent) event;
-                SwitchSensorAvro payload = SwitchSensorAvro.newBuilder()
+                payload = SwitchSensorAvro.newBuilder()
                         .setState(sw.isState())
                         .build();
-                builder.setPayload(payload);
             }
-            default -> throw new IllegalArgumentException("Unknown sensor event type: " + event.getType());
+            default -> throw new IllegalArgumentException("❌ Unknown sensor event type: " + event.getType());
         }
 
-        return builder.build();
+        return SensorEventAvro.newBuilder()
+                .setId(event.getId())
+                .setHubId(event.getHubId())
+                .setTimestamp(timestamp)
+                .setPayload(payload)  // важно: объект должен быть SpecificRecord!
+                .build();
     }
 }
