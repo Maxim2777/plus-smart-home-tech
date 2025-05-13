@@ -5,6 +5,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.apache.avro.specific.SpecificRecord;
 import org.springframework.kafka.core.*;
 
 import java.util.HashMap;
@@ -14,7 +15,7 @@ import java.util.Map;
 public class KafkaConfig {
 
     @Bean
-    public ProducerFactory<String, Object> producerFactory() {
+    public ProducerFactory<String, SpecificRecord> producerFactory() {
         Map<String, Object> config = new HashMap<>();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         config.put("schema.registry.url", "http://localhost:8081");
@@ -24,7 +25,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, Object> kafkaTemplate() {
+    public KafkaTemplate<String, SpecificRecord> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 }

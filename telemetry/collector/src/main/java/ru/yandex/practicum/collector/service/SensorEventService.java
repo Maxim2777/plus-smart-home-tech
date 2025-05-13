@@ -2,6 +2,7 @@ package ru.yandex.practicum.collector.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.avro.specific.SpecificRecord;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.collector.model.*;
@@ -21,7 +22,7 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class SensorEventService {
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String, SpecificRecord> kafkaTemplate;
 
     public void processEvent(SensorEvent event) {
         try {

@@ -3,6 +3,7 @@ package ru.yandex.practicum.collector.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.apache.avro.specific.SpecificRecord;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.collector.model.hub.*;
 import ru.yandex.practicum.collector.model.hub.HubEvent;
@@ -26,7 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HubEventService {
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String, SpecificRecord> kafkaTemplate;
 
     public void processEvent(HubEvent event) {
         try {
