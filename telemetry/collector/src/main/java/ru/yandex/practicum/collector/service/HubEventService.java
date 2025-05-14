@@ -2,6 +2,7 @@ package ru.yandex.practicum.collector.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.avro.specific.SpecificRecord;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.collector.model.hub.*;
@@ -20,14 +21,14 @@ public class HubEventService {
 
     public void processEvent(HubEvent event) {
         HubEventAvro avro = mapToAvro(event);
-        log.info("📤 Отправка HubEvent в Kafka. Payload: {}", avro.getPayload().getClass().getSimpleName());
+        log.info("📤 HubEvent отправляется в Kafka с payload: {}", avro.getPayload().getClass().getSimpleName());
         kafkaTemplate.send("telemetry.hubs.v1", avro.getHubId(), avro);
     }
 
     private HubEventAvro mapToAvro(HubEvent event) {
         long timestamp = event.getTimestamp() != null ? event.getTimestamp().toEpochMilli() : Instant.now().toEpochMilli();
 
-        Object payload = switch (event.getType()) {
+        SpecificRecord payload = switch (event.getType()) {
             case DEVICE_ADDED -> {
                 DeviceAddedEvent e = (DeviceAddedEvent) event;
                 yield DeviceAddedEventAvro.newBuilder()
@@ -43,6 +44,7 @@ public class HubEventService {
             }
             case SCENARIO_ADDED -> {
                 ScenarioAddedEvent e = (ScenarioAddedEvent) event;
+
                 List<ScenarioConditionAvro> conditions = e.getConditions().stream()
                         .map(c -> ScenarioConditionAvro.newBuilder()
                                 .setSensorId(c.getSensorId())
@@ -51,6 +53,7 @@ public class HubEventService {
                                 .setValue(c.getValue())
                                 .build())
                         .toList();
+
                 List<DeviceActionAvro> actions = e.getActions().stream()
                         .map(a -> DeviceActionAvro.newBuilder()
                                 .setSensorId(a.getSensorId())
@@ -58,6 +61,7 @@ public class HubEventService {
                                 .setValue(a.getValue())
                                 .build())
                         .toList();
+
                 yield ScenarioAddedEventAvro.newBuilder()
                         .setName(e.getName())
                         .setConditions(conditions)

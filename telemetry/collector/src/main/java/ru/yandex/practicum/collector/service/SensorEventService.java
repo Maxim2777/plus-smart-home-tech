@@ -2,6 +2,7 @@ package ru.yandex.practicum.collector.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.avro.specific.SpecificRecord;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.collector.model.*;
@@ -19,14 +20,14 @@ public class SensorEventService {
 
     public void processEvent(SensorEvent event) {
         SensorEventAvro avro = mapToAvro(event);
-        log.info("📤 Отправка SensorEvent в Kafka. Payload: {}", avro.getPayload().getClass().getSimpleName());
+        log.info("📤 SensorEvent отправляется в Kafka с payload: {}", avro.getPayload().getClass().getSimpleName());
         kafkaTemplate.send("telemetry.sensors.v1", avro.getId(), avro);
     }
 
     private SensorEventAvro mapToAvro(SensorEvent event) {
         long timestamp = event.getTimestamp() != null ? event.getTimestamp().toEpochMilli() : Instant.now().toEpochMilli();
 
-        Object payload = switch (event.getType()) {
+        SpecificRecord payload = switch (event.getType()) {
             case LIGHT_SENSOR_EVENT -> LightSensorAvro.newBuilder()
                     .setLinkQuality(((LightSensorEvent) event).getLinkQuality())
                     .setLuminosity(((LightSensorEvent) event).getLuminosity())
