@@ -3,7 +3,9 @@ package ru.yandex.practicum.collector.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecord;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.apache.avro.specific.SpecificRecordBase;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.collector.model.hub.*;
 import ru.yandex.practicum.collector.model.hub.HubEvent;
@@ -17,12 +19,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HubEventService {
 
-    private final KafkaTemplate<String, HubEventAvro> kafkaTemplate;
+    private final Producer<String, SpecificRecordBase> kafkaProducer;
 
     public void processEvent(HubEvent event) {
         HubEventAvro avro = mapToAvro(event);
         log.info("📤 HubEvent отправляется в Kafka с payload: {}", avro.getPayload().getClass().getSimpleName());
-        kafkaTemplate.send("telemetry.hubs.v1", avro.getHubId(), avro);
+        kafkaProducer.send(new ProducerRecord<>("telemetry.hubs.v1", avro.getHubId(), avro));
     }
 
     private HubEventAvro mapToAvro(HubEvent event) {

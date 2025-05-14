@@ -1,37 +1,26 @@
 package ru.yandex.practicum.collector.config;
 
+import org.apache.avro.specific.SpecificRecordBase;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
-import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.core.*;
+import ru.yandex.practicum.collector.serializer.GeneralAvroSerializer;
 
-import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
-import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
-
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Properties;
 
 @Configuration
 public class KafkaConfig {
 
-    private Map<String, Object> baseConfigs() {
-        Map<String, Object> props = new HashMap<>();
+    @Bean
+    public Producer<String, SpecificRecordBase> kafkaProducer() {
+        Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        props.put("schema.registry.url", "http://localhost:8081");
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
-        return props;
-    }
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GeneralAvroSerializer.class.getName());
 
-    @Bean
-    public KafkaTemplate<String, SensorEventAvro> sensorEventKafkaTemplate() {
-        return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(baseConfigs()));
-    }
-
-    @Bean
-    public KafkaTemplate<String, HubEventAvro> hubEventKafkaTemplate() {
-        return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(baseConfigs()));
+        return new KafkaProducer<>(props);
     }
 }

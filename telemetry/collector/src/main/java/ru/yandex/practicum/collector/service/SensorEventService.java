@@ -3,7 +3,9 @@ package ru.yandex.practicum.collector.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecord;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.apache.avro.specific.SpecificRecordBase;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.collector.model.*;
 import ru.yandex.practicum.collector.model.SensorEvent;
@@ -16,12 +18,12 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class SensorEventService {
 
-    private final KafkaTemplate<String, SensorEventAvro> kafkaTemplate;
+    private final Producer<String, SpecificRecordBase> kafkaProducer;
 
     public void processEvent(SensorEvent event) {
         SensorEventAvro avro = mapToAvro(event);
         log.info("📤 SensorEvent отправляется в Kafka с payload: {}", avro.getPayload().getClass().getSimpleName());
-        kafkaTemplate.send("telemetry.sensors.v1", avro.getId(), avro);
+        kafkaProducer.send(new ProducerRecord<>("telemetry.sensors.v1", avro.getId(), avro));
     }
 
     private SensorEventAvro mapToAvro(SensorEvent event) {
