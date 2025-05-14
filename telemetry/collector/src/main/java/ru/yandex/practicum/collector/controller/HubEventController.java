@@ -21,7 +21,7 @@ public class HubEventController {
             hubEventService.processEvent(event);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            log.error("❌ Ошибка в /events/hubs при обработке события: {}", event, e);
+            log.error("Ошибка в /events/hubs при обработке события: {}", event, e);
             return ResponseEntity.internalServerError().body("Ошибка: " + e.getClass().getSimpleName() + ": " + e.getMessage());
         }
     }

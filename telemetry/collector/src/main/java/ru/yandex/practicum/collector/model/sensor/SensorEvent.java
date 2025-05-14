@@ -1,4 +1,4 @@
-package ru.yandex.practicum.collector.model;
+package ru.yandex.practicum.collector.model.sensor;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.validation.constraints.NotBlank;

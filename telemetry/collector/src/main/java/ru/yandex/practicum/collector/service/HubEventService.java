@@ -23,7 +23,7 @@ public class HubEventService {
 
     public void processEvent(HubEvent event) {
         HubEventAvro avro = mapToAvro(event);
-        log.info("📤 HubEvent отправляется в Kafka с payload: {}", avro.getPayload().getClass().getSimpleName());
+        log.info("HubEvent отправляется в Kafka с payload: {}", avro.getPayload().getClass().getSimpleName());
         kafkaProducer.send(new ProducerRecord<>("telemetry.hubs.v1", avro.getHubId(), avro));
     }
 

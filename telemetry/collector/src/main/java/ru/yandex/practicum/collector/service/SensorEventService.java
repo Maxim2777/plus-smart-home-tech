@@ -7,8 +7,12 @@ import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.collector.model.*;
-import ru.yandex.practicum.collector.model.SensorEvent;
+import ru.yandex.practicum.collector.model.sensor.SensorEvent;
+import ru.yandex.practicum.collector.model.sensor.ClimateSensorEvent;
+import ru.yandex.practicum.collector.model.sensor.LightSensorEvent;
+import ru.yandex.practicum.collector.model.sensor.MotionSensorEvent;
+import ru.yandex.practicum.collector.model.sensor.SwitchSensorEvent;
+import ru.yandex.practicum.collector.model.sensor.TemperatureSensorEvent;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 
 import java.time.Instant;
@@ -22,7 +26,7 @@ public class SensorEventService {
 
     public void processEvent(SensorEvent event) {
         SensorEventAvro avro = mapToAvro(event);
-        log.info("📤 SensorEvent отправляется в Kafka с payload: {}", avro.getPayload().getClass().getSimpleName());
+        log.info("SensorEvent отправляется в Kafka с payload: {}", avro.getPayload().getClass().getSimpleName());
         kafkaProducer.send(new ProducerRecord<>("telemetry.sensors.v1", avro.getId(), avro));
     }
 
