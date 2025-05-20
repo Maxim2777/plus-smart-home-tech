@@ -85,12 +85,12 @@
                     <!-- ВАЖНО: путь до proto-файлов -->
                     <protoSourceRoot>${project.basedir}/src/main/protobuf</protoSourceRoot>
 
-                    <!-- Компилятор protobuf -->
-                    <protocArtifact>com.google.protobuf:protoc:3.24.4:exe:windows-x86_64</protocArtifact>
+                    <!-- Кросс-платформенный protoc -->
+                    <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
 
                     <!-- gRPC plugin -->
                     <pluginId>grpc-java</pluginId>
-                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.63.0:exe:windows-x86_64</pluginArtifact>
+                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
                 </configuration>
                 <executions>
                     <execution>
