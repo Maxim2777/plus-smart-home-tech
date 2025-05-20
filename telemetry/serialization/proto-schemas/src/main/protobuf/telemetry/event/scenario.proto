@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package telemetry.event;
+
+option java_package = "ru.yandex.practicum.grpc.telemetry.event";
+option java_multiple_files = true;
+
+enum ConditionTypeProto {
+  TEMPERATURE = 0;
+  HUMIDITY = 1;
+  MOTION = 2;
+  CO2 = 3;
+  LUMINOSITY = 4;
+}
+
+enum ConditionOperationProto {
+  EQUAL = 0;
+  GREATER_THAN = 1;
+  LESS_THAN = 2;
+  NOT_EQUAL = 3;
+}
+
+message ScenarioConditionProto {
+  ConditionTypeProto type = 1;
+  ConditionOperationProto operation = 2;
+  string value = 3;
+}
+
+enum ActionTypeProto {
+  TURN_ON = 0;
+  TURN_OFF = 1;
+  TOGGLE = 2;
+}
+
+message DeviceActionProto {
+  string device_id = 1;
+  ActionTypeProto action = 2;
+}
