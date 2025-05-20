@@ -1,3 +1,4 @@
+/*
 package ru.yandex.practicum.collector.controller;
 
 import lombok.RequiredArgsConstructor;
@@ -25,4 +26,4 @@ public class HubEventController {
             return ResponseEntity.internalServerError().body("Ошибка: " + e.getClass().getSimpleName() + ": " + e.getMessage());
         }
     }
-}
+}*/

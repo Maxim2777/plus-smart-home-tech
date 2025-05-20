@@ -1,9 +1,9 @@
 server:
-  port: 59091
+  port: 8080   # любой свободный порт для HTTP (если нужен)
 
 grpc:
   server:
-    port: 59091
+    port: 59091   # gRPC сервер по этому порту
 
 spring:
   kafka:
