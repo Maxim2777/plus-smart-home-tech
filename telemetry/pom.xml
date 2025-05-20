@@ -14,7 +14,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>serialization</module>
+        <module>serialization/avro-schemas</module>
+        <module>serialization/proto-schemas</module>
         <module>collector</module>
     </modules>
 
@@ -36,5 +37,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
