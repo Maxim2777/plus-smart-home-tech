@@ -51,23 +51,29 @@ public class HubEventService {
             case SCENARIO_ADDED -> {
                 ScenarioAddedEvent e = (ScenarioAddedEvent) event;
 
+                log.info("Mapping SCENARIO_ADDED: name={}, conditions={}, actions={}",
+                        e.getName(), e.getConditions(), e.getActions());
+
                 List<ScenarioConditionAvro> conditions = e.getConditions().stream()
                         .map(c -> {
                             Object rawValue = c.getValue();
+
                             ScenarioConditionAvro.Builder builder = ScenarioConditionAvro.newBuilder()
                                     .setSensorId(c.getSensorId())
                                     .setType(ConditionTypeAvro.valueOf(c.getType().name()))
                                     .setOperation(ConditionOperationAvro.valueOf(c.getOperation().name()));
 
-                            // Безопасная установка значения в union: null, int, boolean
                             if (rawValue == null) {
+                                log.info("✅ SC Condition: value=null");
                                 builder.setValue(null);
                             } else if (rawValue instanceof Integer) {
+                                log.info("✅ SC Condition: value=Integer({})", rawValue);
                                 builder.setValue((Integer) rawValue);
                             } else if (rawValue instanceof Boolean) {
+                                log.info("✅ SC Condition: value=Boolean({})", rawValue);
                                 builder.setValue((Boolean) rawValue);
                             } else {
-                                log.warn("⚠️ Неподдерживаемый тип value в ScenarioCondition: {} (type: {})", rawValue, rawValue.getClass());
+                                log.warn("⚠️ SC Condition: неподдерживаемый тип value={} (class={})", rawValue, rawValue.getClass().getName());
                                 builder.setValue(null);
                             }
 

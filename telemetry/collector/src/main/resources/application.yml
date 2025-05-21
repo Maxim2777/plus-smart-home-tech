@@ -1,14 +1,92 @@
+spring:
+  application:
+    name: collector
+
 server:
-  port: 8080   # HTTP-порт (если нужен)
+  port: 8080
 
 grpc:
   server:
-    port: 59091   # gRPC порт
+    port: 59091
 
-spring:
+  client:
+    analytics:
+      address: static://localhost:9091
+      negotiationType: plaintext        # Отключение TLS для локальной отладки
+
+logging:
+  level:
+    ru.yandex.practicum.telemetry: TRACE
+    org:
+      springframework: ERROR
+      apache.kafka: WARN
+
+collector:
   kafka:
-    bootstrap-servers: localhost:9092
     producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: ru.yandex.practicum.collector.serializer.GeneralAvroSerializer
-    client-id: collector-service
+      properties:
+        "bootstrap.servers": localhost:9092
+        "client.id": "telemetry.collector"
+        "key.serializer": org.apache.kafka.common.serialization.StringSerializer
+        "value.serializer": ru.yandex.practicum.kafka.serializer.GeneralAvroSerializer
+      topics:
+        sensor-events: telemetry.sensors.v1
+        hubs-events: telemetry.hubs.v1
+
+sensor:
+  motionSensors:
+    - id: "motion-1"
+      linkQuality:
+        minValue: 0
+        maxValue: 100
+      voltage:
+        minValue: 0
+        maxValue: 220
+    - id: "motion-2"
+      linkQuality:
+        minValue: 50
+        maxValue: 60
+      voltage:
+        minValue: 100
+        maxValue: 220
+  switchSensors:
+    - id: "switch-1"
+  temperatureSensors:
+    - id: "temperature-1"
+      temperature:
+        minValue: -20
+        maxValue: 30
+    - id: "temperature-2"
+      temperature:
+        minValue: 0
+        maxValue: 50
+  lightSensors:
+    - id: "light-1"
+      luminosity:
+        minValue: 100
+        maxValue: 800
+    - id: "light-2"
+      luminosity:
+        minValue: 200
+        maxValue: 1000
+  climateSensors:
+    - id: "climate-1"
+      temperature:
+        minValue: 10
+        maxValue: 25
+      humidity:
+        minValue: 30
+        maxValue: 60
+      co2Level:
+        minValue: 400
+        maxValue: 1000
+    - id: "climate-2"
+      temperature:
+        minValue: 15
+        maxValue: 30
+      humidity:
+        minValue: 40
+        maxValue: 65
+      co2Level:
+        minValue: 300
+        maxValue: 800
