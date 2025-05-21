@@ -53,17 +53,23 @@ public class HubEventService {
 
                 List<ScenarioConditionAvro> conditions = e.getConditions().stream()
                         .map(c -> {
-                            Object value = c.getValue();
-                            if (!(value instanceof Integer || value instanceof Boolean || value == null)) {
-                                log.warn("Некорректный тип value в ScenarioCondition: {}", value);
-                                value = null;
-                            }
-
+                            Object rawValue = c.getValue();
                             ScenarioConditionAvro.Builder builder = ScenarioConditionAvro.newBuilder()
                                     .setSensorId(c.getSensorId())
                                     .setType(ConditionTypeAvro.valueOf(c.getType().name()))
-                                    .setOperation(ConditionOperationAvro.valueOf(c.getOperation().name()))
-                                    .setValue(value); // ✅ используем сгенерированный setValue
+                                    .setOperation(ConditionOperationAvro.valueOf(c.getOperation().name()));
+
+                            // Безопасная установка значения в union: null, int, boolean
+                            if (rawValue == null) {
+                                builder.setValue(null);
+                            } else if (rawValue instanceof Integer) {
+                                builder.setValue((Integer) rawValue);
+                            } else if (rawValue instanceof Boolean) {
+                                builder.setValue((Boolean) rawValue);
+                            } else {
+                                log.warn("⚠️ Неподдерживаемый тип value в ScenarioCondition: {} (type: {})", rawValue, rawValue.getClass());
+                                builder.setValue(null);
+                            }
 
                             return builder.build();
                         })
@@ -73,7 +79,7 @@ public class HubEventService {
                         .map(a -> DeviceActionAvro.newBuilder()
                                 .setSensorId(a.getSensorId())
                                 .setType(ActionTypeAvro.valueOf(a.getType().name()))
-                                .setValue(a.getValue() != null ? a.getValue() : null)
+                                .setValue(a.getValue())  // int или null
                                 .build())
                         .toList();
 
