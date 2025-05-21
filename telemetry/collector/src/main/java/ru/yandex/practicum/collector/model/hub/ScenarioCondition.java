@@ -9,6 +9,6 @@ public class ScenarioCondition {
     private String sensorId;
     private ConditionType type;
     private ConditionOperation operation;
-    private Object value; // Integer или Boolean
+    private Integer value;
 }
 
