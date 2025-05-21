@@ -39,11 +39,16 @@ public class HubEventMapper {
                 ScenarioAddedEventProto p = proto.getScenarioAdded();
                 ScenarioAddedEvent e = new ScenarioAddedEvent();
 
+                // имя сценария (теперь оно обязательно, иначе Avro выбрасывает исключение)
+                e.setName(p.getName());
+
+                // условия
                 List<ScenarioCondition> conditions = p.getConditionsList().stream()
                         .map(this::mapCondition)
                         .collect(Collectors.toList());
                 e.setConditions(conditions);
 
+                // действия
                 List<DeviceAction> actions = p.getActionsList().stream()
                         .map(this::mapAction)
                         .collect(Collectors.toList());
