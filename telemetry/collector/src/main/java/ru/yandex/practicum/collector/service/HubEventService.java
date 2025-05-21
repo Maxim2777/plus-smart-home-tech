@@ -50,12 +50,23 @@ public class HubEventService {
                 ScenarioAddedEvent e = (ScenarioAddedEvent) event;
 
                 List<ScenarioConditionAvro> conditions = e.getConditions().stream()
-                        .map(c -> ScenarioConditionAvro.newBuilder()
-                                .setSensorId(c.getSensorId())
-                                .setType(ConditionTypeAvro.valueOf(c.getType().name()))
-                                .setOperation(ConditionOperationAvro.valueOf(c.getOperation().name()))
-                                .setValue(c.getValue())
-                                .build())
+                        .map(c -> {
+                            Integer intValue = null;
+                            if (c.getValue() instanceof Integer i) {
+                                intValue = i;
+                            } else {
+                                log.warn("Condition value has unexpected type: {}, sensorId: {}",
+                                        c.getValue() != null ? c.getValue().getClass().getSimpleName() : "null",
+                                        c.getSensorId());
+                            }
+
+                            return ScenarioConditionAvro.newBuilder()
+                                    .setSensorId(c.getSensorId())
+                                    .setType(ConditionTypeAvro.valueOf(c.getType().name()))
+                                    .setOperation(ConditionOperationAvro.valueOf(c.getOperation().name()))
+                                    .setValue(intValue)
+                                    .build();
+                        })
                         .toList();
 
                 List<DeviceActionAvro> actions = e.getActions().stream()
