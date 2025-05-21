@@ -1,16 +1,14 @@
 server:
-  port: 8080   # любой свободный порт для HTTP (если нужен)
+  port: 8080   # HTTP-порт (если нужен)
 
 grpc:
   server:
-    port: 59091   # gRPC сервер по этому порту
+    port: 59091   # gRPC порт
 
 spring:
   kafka:
     bootstrap-servers: localhost:9092
-    properties:
-      schema.registry.url: http://localhost:8081
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      value-serializer: ru.yandex.practicum.collector.serializer.GeneralAvroSerializer
     client-id: collector-service
