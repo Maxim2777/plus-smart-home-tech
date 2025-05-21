@@ -7,6 +7,7 @@ import ru.yandex.practicum.grpc.telemetry.event.HubEvent.DeviceAddedEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.HubEvent.DeviceRemovedEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.ScenarioAddedEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.ScenarioConditionProto;
+import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
 
 import java.time.Instant;
 import java.util.List;
@@ -42,6 +43,11 @@ public class HubEventMapper {
                         .map(this::mapCondition)
                         .collect(Collectors.toList());
                 e.setConditions(conditions);
+
+                List<DeviceAction> actions = p.getActionsList().stream()
+                        .map(this::mapAction)
+                        .collect(Collectors.toList());
+                e.setActions(actions);
 
                 event = e;
             }
@@ -84,4 +90,13 @@ public class HubEventMapper {
 
         return condition;
     }
+
+    private DeviceAction mapAction(DeviceActionProto proto) {
+        DeviceAction action = new DeviceAction();
+        action.setSensorId(proto.getDeviceId()); // deviceId → sensorId (по модели)
+        action.setType(ActionType.valueOf(proto.getAction().name())); // enum маппинг
+        action.setValue(null); // если в Proto нет поля value
+        return action;
+    }
+
 }

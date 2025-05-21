@@ -10,12 +10,11 @@ protocol HubEvent {
 	}
 
 	enum ConditionTypeAvro {
+		TEMPERATURE,
+		HUMIDITY,
 		MOTION,
 		LUMINOSITY,
-		SWITCH,
-		TEMPERATURE,
-		CO2LEVEL,
-		HUMIDITY
+		CO2
 	}
 
 	enum ConditionOperationAvro {
