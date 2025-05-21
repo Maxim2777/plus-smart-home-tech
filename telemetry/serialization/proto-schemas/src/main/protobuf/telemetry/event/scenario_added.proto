@@ -8,8 +8,7 @@ option java_multiple_files = true;
 import "telemetry/event/scenario.proto";
 
 message ScenarioAddedEventProto {
-  string id = 1;
-  string name = 2;
-  repeated ScenarioConditionProto conditions = 3;
-  repeated DeviceActionProto actions = 4;
+  string name = 1;
+  repeated ScenarioConditionProto conditions = 2;
+  repeated DeviceActionProto actions = 3;
 }
