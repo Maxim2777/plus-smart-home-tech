@@ -28,7 +28,9 @@ public class HubEventService {
     }
 
     private HubEventAvro mapToAvro(HubEvent event) {
-        long timestamp = event.getTimestamp() != null ? event.getTimestamp().toEpochMilli() : Instant.now().toEpochMilli();
+        long timestamp = event.getTimestamp() != null
+                ? event.getTimestamp().toEpochMilli()
+                : Instant.now().toEpochMilli();
 
         SpecificRecord payload = switch (event.getType()) {
             case DEVICE_ADDED -> {
@@ -52,20 +54,28 @@ public class HubEventService {
                                 .setSensorId(c.getSensorId())
                                 .setType(ConditionTypeAvro.valueOf(c.getType().name()))
                                 .setOperation(ConditionOperationAvro.valueOf(c.getOperation().name()))
-                                .setValue(c.getValue())
+                                .setValue(c.getValue() != null ? c.getValue().toString() : null)
                                 .build())
                         .toList();
 
                 List<DeviceActionAvro> actions = e.getActions().stream()
-                        .map(a -> DeviceActionAvro.newBuilder()
-                                .setSensorId(a.getSensorId())
-                                .setType(ActionTypeAvro.valueOf(a.getType().name()))
-                                .setValue(a.getValue())
-                                .build())
+                        .map(a -> {
+                            DeviceActionAvro.Builder builder = DeviceActionAvro.newBuilder()
+                                    .setSensorId(a.getSensorId())
+                                    .setType(ActionTypeAvro.valueOf(a.getType().name()));
+
+                            if (a.getValue() != null) {
+                                builder.setValue(a.getValue());
+                            } else {
+                                builder.setValue(null);  // Явно укажем null
+                            }
+
+                            return builder.build();
+                        })
                         .toList();
 
                 yield ScenarioAddedEventAvro.newBuilder()
-                        .setName(e.getName())
+                        .setName(e.getName() != null ? e.getName() : "") // Избегаем null для строки name
                         .setConditions(conditions)
                         .setActions(actions)
                         .build();
@@ -73,7 +83,7 @@ public class HubEventService {
             case SCENARIO_REMOVED -> {
                 ScenarioRemovedEvent e = (ScenarioRemovedEvent) event;
                 yield ScenarioRemovedEventAvro.newBuilder()
-                        .setName(e.getName())
+                        .setName(e.getName() != null ? e.getName() : "") // Избегаем null
                         .build();
             }
         };
