@@ -98,4 +98,22 @@
         </repository>
     </repositories>
 
+    <build>
+        <plugins>
+            <!-- Плагин Spring Boot, чтобы jar был исполняемым -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.3.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
