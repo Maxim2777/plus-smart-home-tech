@@ -101,8 +101,8 @@ public class HubEventMapper {
         action.setSensorId(proto.getDeviceId());
         action.setType(ActionType.valueOf(proto.getAction().name()));
 
-        // Убедимся, что value — либо null, либо Integer, либо Boolean
-        action.setValue(null);  // или какое-то число, если появится поле value
+        // Устанавливаем int-значение напрямую
+        action.setValue(proto.getValue());
 
         return action;
     }
