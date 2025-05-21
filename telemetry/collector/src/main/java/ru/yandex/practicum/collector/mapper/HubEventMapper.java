@@ -77,14 +77,17 @@ public class HubEventMapper {
 
     private ScenarioCondition mapCondition(ScenarioConditionProto proto) {
         ScenarioCondition condition = new ScenarioCondition();
-        condition.setSensorId(
-                proto.getSensorId() == null || proto.getSensorId().isBlank()
-                        ? "unknown"
-                        : proto.getSensorId()
-        );
+        condition.setSensorId(proto.getSensorId());
         condition.setType(ConditionType.valueOf(proto.getType().name()));
         condition.setOperation(ConditionOperation.valueOf(proto.getOperation().name()));
-        condition.setValue(proto.getValue());
+
+        Object value = switch (proto.getValueCase()) {
+            case BOOL_VALUE -> proto.getBoolValue();     // либо true/false
+            case INT_VALUE -> proto.getIntValue();       // либо 15, 500 и т.д.
+            case VALUE_NOT_SET -> null;
+        };
+        condition.setValue(value);
+
         return condition;
     }
 
