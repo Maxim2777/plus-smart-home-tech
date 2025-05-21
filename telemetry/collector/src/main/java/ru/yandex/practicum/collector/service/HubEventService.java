@@ -40,22 +40,33 @@ public class HubEventService {
                         .setType(DeviceTypeAvro.valueOf(e.getDeviceType().name()))
                         .build();
             }
+
             case DEVICE_REMOVED -> {
                 DeviceRemovedEvent e = (DeviceRemovedEvent) event;
                 yield DeviceRemovedEventAvro.newBuilder()
                         .setId(e.getId())
                         .build();
             }
+
             case SCENARIO_ADDED -> {
                 ScenarioAddedEvent e = (ScenarioAddedEvent) event;
 
                 List<ScenarioConditionAvro> conditions = e.getConditions().stream()
-                        .map(c -> ScenarioConditionAvro.newBuilder()
-                                .setSensorId(c.getSensorId())
-                                .setType(ConditionTypeAvro.valueOf(c.getType().name()))
-                                .setOperation(ConditionOperationAvro.valueOf(c.getOperation().name()))
-                                .setValue(c.getValue() != null ? (Integer) c.getValue() : null)
-                                .build())
+                        .map(c -> {
+                            Integer value = null;
+                            if (c.getValue() instanceof Integer i) {
+                                value = i;
+                            } else if (c.getValue() != null) {
+                                log.warn("Некорректный тип value в ScenarioCondition (ожидался Integer): sensorId={}, value={}", c.getSensorId(), c.getValue());
+                            }
+
+                            return ScenarioConditionAvro.newBuilder()
+                                    .setSensorId(c.getSensorId())
+                                    .setType(ConditionTypeAvro.valueOf(c.getType().name()))
+                                    .setOperation(ConditionOperationAvro.valueOf(c.getOperation().name()))
+                                    .setValue(value)
+                                    .build();
+                        })
                         .toList();
 
                 List<DeviceActionAvro> actions = e.getActions().stream()
