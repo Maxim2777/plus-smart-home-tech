@@ -86,6 +86,11 @@ public class HubEventMapper {
             case INT_VALUE -> proto.getIntValue();       // либо 15, 500 и т.д.
             case VALUE_NOT_SET -> null;
         };
+
+        // Логгируем, чтобы точно знать, что приходит
+        log.info("mapCondition(): sensorId={}, valueCase={}, value={}",
+                proto.getSensorId(), proto.getValueCase(), value);
+
         condition.setValue(value);
 
         return condition;
