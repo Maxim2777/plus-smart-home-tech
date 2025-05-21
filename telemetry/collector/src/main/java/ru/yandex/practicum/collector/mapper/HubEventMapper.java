@@ -8,11 +8,13 @@ import ru.yandex.practicum.grpc.telemetry.event.HubEvent.DeviceRemovedEventProto
 import ru.yandex.practicum.grpc.telemetry.event.ScenarioAddedEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.ScenarioConditionProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class HubEventMapper {
 
@@ -75,20 +77,20 @@ public class HubEventMapper {
 
     private ScenarioCondition mapCondition(ScenarioConditionProto proto) {
         ScenarioCondition condition = new ScenarioCondition();
-
-        // Преобразование enum-значений (убедись, что значения совпадают с Java-энумом)
+        condition.setSensorId(proto.getSensorId());
         condition.setType(ConditionType.valueOf(proto.getType().name()));
         condition.setOperation(ConditionOperation.valueOf(proto.getOperation().name()));
 
-        // Значение условия (возможно строка, int или boolean — зависит от реализации)
-        condition.setValue(proto.getValue());
-
-        // sensorId обязательно нужен — иначе Avro сериализация упадёт
-        String sensorId = proto.getSensorId();
-        if (sensorId == null || sensorId.isBlank()) {
-            sensorId = "unknown"; // можно заменить на UUID.randomUUID().toString() при необходимости
+        switch (proto.getValueCase()) {
+            case INT_VALUE -> condition.setValue(proto.getIntValue());
+            case BOOL_VALUE -> condition.setValue(proto.getBoolValue() ? 1 : 0);
+            case VALUE_NOT_SET -> condition.setValue(null);
+            default -> {
+                // Внимание: сюда попадём, если придёт неожиданное поле
+                log.warn("Неизвестный тип значения в ScenarioConditionProto: {}", proto.getValueCase());
+                condition.setValue(-99999); // или Integer.MIN_VALUE, или выбросить исключение
+            }
         }
-        condition.setSensorId(sensorId);
 
         return condition;
     }

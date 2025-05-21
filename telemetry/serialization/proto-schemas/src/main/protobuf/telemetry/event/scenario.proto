@@ -21,10 +21,14 @@ enum ConditionOperationProto {
 }
 
 message ScenarioConditionProto {
-  string sensor_id = 1; // ← добавляем
+  string sensor_id = 1;
   ConditionTypeProto type = 2;
   ConditionOperationProto operation = 3;
-  int32 value = 4;
+
+  oneof value {
+    int32 int_value = 4;
+    bool bool_value = 5;
+  }
 }
 
 enum ActionTypeProto {
