@@ -19,9 +19,10 @@ protocol HubEvent {
 	}
 
 	enum ConditionOperationAvro {
-		EQUALS,
+		EQUAL,
 		GREATER_THAN,
-		LOWER_THAN
+		LESS_THAN,
+		NOT_EQUAL
 	}
 
 	enum ActionTypeAvro {
