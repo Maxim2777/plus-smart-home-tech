@@ -98,9 +98,12 @@ public class HubEventMapper {
 
     private DeviceAction mapAction(DeviceActionProto proto) {
         DeviceAction action = new DeviceAction();
-        action.setSensorId(proto.getDeviceId()); // deviceId → sensorId (по модели)
-        action.setType(ActionType.valueOf(proto.getAction().name())); // enum маппинг
-        action.setValue(null); // если в Proto нет поля value
+        action.setSensorId(proto.getDeviceId());
+        action.setType(ActionType.valueOf(proto.getAction().name()));
+
+        // Убедимся, что value — либо null, либо Integer, либо Boolean
+        action.setValue(null);  // или какое-то число, если появится поле value
+
         return action;
     }
 
