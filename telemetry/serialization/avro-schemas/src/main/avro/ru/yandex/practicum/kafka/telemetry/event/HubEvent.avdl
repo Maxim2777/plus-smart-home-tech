@@ -25,10 +25,9 @@ protocol HubEvent {
 	}
 
 	enum ActionTypeAvro {
-		ACTIVATE,
-		DEACTIVATE,
-		INVERSE,
-		SET_VALUE
+		TURN_ON,
+		TURN_OFF,
+		TOGGLE
 	}
 
 	record DeviceAddedEventAvro {
