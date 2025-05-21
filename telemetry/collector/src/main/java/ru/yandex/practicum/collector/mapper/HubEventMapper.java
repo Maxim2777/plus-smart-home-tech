@@ -67,9 +67,21 @@ public class HubEventMapper {
 
     private ScenarioCondition mapCondition(ScenarioConditionProto proto) {
         ScenarioCondition condition = new ScenarioCondition();
+
+        // Преобразование enum-значений (убедись, что значения совпадают с Java-энумом)
         condition.setType(ConditionType.valueOf(proto.getType().name()));
         condition.setOperation(ConditionOperation.valueOf(proto.getOperation().name()));
-        condition.setValue(proto.getValue()); // предполагается строка
+
+        // Значение условия (возможно строка, int или boolean — зависит от реализации)
+        condition.setValue(proto.getValue());
+
+        // sensorId обязательно нужен — иначе Avro сериализация упадёт
+        String sensorId = proto.getSensorId();
+        if (sensorId == null || sensorId.isBlank()) {
+            sensorId = "unknown"; // можно заменить на UUID.randomUUID().toString() при необходимости
+        }
+        condition.setSensorId(sensorId);
+
         return condition;
     }
 }
