@@ -77,28 +77,14 @@ public class HubEventMapper {
 
     private ScenarioCondition mapCondition(ScenarioConditionProto proto) {
         ScenarioCondition condition = new ScenarioCondition();
+        condition.setSensorId(
+                proto.getSensorId() == null || proto.getSensorId().isBlank()
+                        ? "unknown"
+                        : proto.getSensorId()
+        );
         condition.setType(ConditionType.valueOf(proto.getType().name()));
         condition.setOperation(ConditionOperation.valueOf(proto.getOperation().name()));
-
-        String sensorId = proto.getSensorId();
-        condition.setSensorId(sensorId == null || sensorId.isBlank() ? "unknown" : sensorId);
-
-        switch (proto.getValueCase()) {
-            case INT_VALUE -> condition.setValue(proto.getIntValue());
-            case BOOL_VALUE -> {
-                log.warn("Получен boolValue вместо intValue, возможно ошибка данных");
-                condition.setValue(proto.getBoolValue() ? 1 : 0);
-            }
-            case VALUE_NOT_SET -> {
-                log.warn("Значение value не установлено в ScenarioConditionProto: {}", proto);
-                condition.setValue(null);
-            }
-            default -> {
-                log.warn("Необработанный valueCase: {}", proto.getValueCase());
-                condition.setValue(null);
-            }
-        }
-
+        condition.setValue(proto.getValue());
         return condition;
     }
 

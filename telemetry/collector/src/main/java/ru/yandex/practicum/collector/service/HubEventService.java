@@ -54,7 +54,7 @@ public class HubEventService {
                                 .setSensorId(c.getSensorId())
                                 .setType(ConditionTypeAvro.valueOf(c.getType().name()))
                                 .setOperation(ConditionOperationAvro.valueOf(c.getOperation().name()))
-                                .setValue(c.getValue() != null ? (Integer) c.getValue() : null)
+                                .setValue(c.getValue())
                                 .build())
                         .toList();
 
