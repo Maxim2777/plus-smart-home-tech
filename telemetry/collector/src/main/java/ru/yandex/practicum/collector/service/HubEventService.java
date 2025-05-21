@@ -54,7 +54,7 @@ public class HubEventService {
                                 .setSensorId(c.getSensorId())
                                 .setType(ConditionTypeAvro.valueOf(c.getType().name()))
                                 .setOperation(ConditionOperationAvro.valueOf(c.getOperation().name()))
-                                .setValue(c.getValue() instanceof Integer ? (Integer) c.getValue() : 0) // значение типа int
+                                .setValue(c.getValue() != null ? (Integer) c.getValue() : null)
                                 .build())
                         .toList();
 
@@ -62,7 +62,7 @@ public class HubEventService {
                         .map(a -> DeviceActionAvro.newBuilder()
                                 .setSensorId(a.getSensorId())
                                 .setType(ActionTypeAvro.valueOf(a.getType().name()))
-                                .setValue(a.getValue() != null ? a.getValue() : 0) // тоже Integer
+                                .setValue(a.getValue() != null ? a.getValue() : null)
                                 .build())
                         .toList();
 
@@ -72,6 +72,7 @@ public class HubEventService {
                         .setActions(actions)
                         .build();
             }
+
             case SCENARIO_REMOVED -> {
                 ScenarioRemovedEvent e = (ScenarioRemovedEvent) event;
                 yield ScenarioRemovedEventAvro.newBuilder()
