@@ -77,27 +77,32 @@ public class HubEventMapper {
 
     private ScenarioCondition mapCondition(ScenarioConditionProto proto) {
         ScenarioCondition condition = new ScenarioCondition();
+
+        // Enum mapping
         condition.setType(ConditionType.valueOf(proto.getType().name()));
         condition.setOperation(ConditionOperation.valueOf(proto.getOperation().name()));
 
+        // sensorId fallback
         String sensorId = proto.getSensorId();
         condition.setSensorId(sensorId == null || sensorId.isBlank() ? "unknown" : sensorId);
 
-        Object value = switch (proto.getValueCase()) {
-            case INT_VALUE -> proto.getIntValue();
+        // value mapping (int or boolean)
+        Object value;
+        switch (proto.getValueCase()) {
+            case INT_VALUE -> value = proto.getIntValue();
             case BOOL_VALUE -> {
                 log.warn("Получен boolValue, ожидается intValue: sensorId={}, type={}", sensorId, condition.getType());
-                yield null; // ❗ или 0, если действительно нужно по дефолту
+                value = null; // Или 0, если ты хочешь принудительно привести к int
             }
             case VALUE_NOT_SET -> {
                 log.warn("Значение value не установлено в ScenarioConditionProto: {}", proto);
-                yield null;
+                value = null;
             }
             default -> {
                 log.warn("Необработанный valueCase: {}", proto.getValueCase());
-                yield null;
+                value = null;
             }
-        };
+        }
 
         condition.setValue(value);
         return condition;
