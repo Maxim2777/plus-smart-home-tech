@@ -22,6 +22,7 @@ public class HubEventMapper {
             case DEVICE_ADDED -> {
                 DeviceAddedEventProto p = proto.getDeviceAdded();
                 DeviceAddedEvent e = new DeviceAddedEvent();
+                e.setId(p.getId()); // ✅ добавляем id
                 e.setDeviceType(DeviceType.valueOf(p.getType().name()));
                 event = e;
             }
@@ -29,6 +30,7 @@ public class HubEventMapper {
             case DEVICE_REMOVED -> {
                 DeviceRemovedEventProto p = proto.getDeviceRemoved();
                 DeviceRemovedEvent e = new DeviceRemovedEvent();
+                e.setId(p.getId()); // ✅
                 event = e;
             }
 
@@ -36,13 +38,11 @@ public class HubEventMapper {
                 ScenarioAddedEventProto p = proto.getScenarioAdded();
                 ScenarioAddedEvent e = new ScenarioAddedEvent();
 
-                // Только условия (name/id отсутствуют в proto)
                 List<ScenarioCondition> conditions = p.getConditionsList().stream()
                         .map(this::mapCondition)
                         .collect(Collectors.toList());
                 e.setConditions(conditions);
 
-                // Если actions нужны и есть — можно добавить здесь
                 event = e;
             }
 
