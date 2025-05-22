@@ -50,22 +50,26 @@ public class HubEventService {
             case SCENARIO_ADDED -> {
                 ScenarioAddedEvent e = (ScenarioAddedEvent) event;
 
-                List<ScenarioConditionAvro> conditions = e.getConditions().stream()
+                List<ScenarioConditionAvro> conditions = e.getConditions() != null
+                        ? e.getConditions().stream()
                         .map(c -> ScenarioConditionAvro.newBuilder()
                                 .setSensorId(c.getSensorId())
                                 .setType(ConditionTypeAvro.valueOf(c.getType().name()))
                                 .setOperation(ConditionOperationAvro.valueOf(c.getOperation().name()))
                                 .setValue(c.getValue())
                                 .build())
-                        .toList();
+                        .toList()
+                        : List.of();
 
-                List<DeviceActionAvro> actions = e.getActions().stream()
+                List<DeviceActionAvro> actions = e.getActions() != null
+                        ? e.getActions().stream()
                         .map(a -> DeviceActionAvro.newBuilder()
                                 .setSensorId(a.getSensorId())
                                 .setType(ActionTypeAvro.valueOf(a.getType().name()))
                                 .setValue(a.getValue())
                                 .build())
-                        .toList();
+                        .toList()
+                        : List.of();
 
                 yield ScenarioAddedEventAvro.newBuilder()
                         .setName(e.getName())
@@ -73,6 +77,7 @@ public class HubEventService {
                         .setActions(actions)
                         .build();
             }
+
             case SCENARIO_REMOVED -> {
                 ScenarioRemovedEvent e = (ScenarioRemovedEvent) event;
                 yield ScenarioRemovedEventAvro.newBuilder()
