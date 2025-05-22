@@ -86,8 +86,8 @@ public class HubEventMapper {
         switch (proto.getValueCase()) {
             case INT_VALUE -> condition.setValue(proto.getIntValue());
             case BOOL_VALUE -> {
-                log.warn("Получен boolValue вместо intValue, возможно ошибка данных");
-                condition.setValue(proto.getBoolValue() ? 1 : 0);
+                log.info("Получен boolValue: {}", proto.getBoolValue());
+                condition.setValue(proto.getBoolValue());
             }
             case VALUE_NOT_SET -> {
                 log.warn("Значение value не установлено в ScenarioConditionProto: {}", proto);
@@ -101,6 +101,7 @@ public class HubEventMapper {
 
         return condition;
     }
+
 
     private DeviceAction mapAction(DeviceActionProto proto) {
         DeviceAction action = new DeviceAction();
