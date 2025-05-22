@@ -25,7 +25,7 @@ public class HubEventMapper {
             case DEVICE_ADDED -> {
                 DeviceAddedEventProto p = proto.getDeviceAdded();
                 DeviceAddedEvent e = new DeviceAddedEvent();
-                e.setId(p.getId()); // ✅ добавляем id
+                e.setId(p.getId()); // добавляем id
                 e.setDeviceType(DeviceType.valueOf(p.getType().name()));
                 event = e;
             }
@@ -33,7 +33,7 @@ public class HubEventMapper {
             case DEVICE_REMOVED -> {
                 DeviceRemovedEventProto p = proto.getDeviceRemoved();
                 DeviceRemovedEvent e = new DeviceRemovedEvent();
-                e.setId(p.getId()); // ✅
+                e.setId(p.getId());
                 event = e;
             }
 
