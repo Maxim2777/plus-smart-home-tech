@@ -10,24 +10,25 @@ protocol HubEvent {
 	}
 
 	enum ConditionTypeAvro {
-		TEMPERATURE,
-		HUMIDITY,
 		MOTION,
 		LUMINOSITY,
-		CO2
+		SWITCH,
+		TEMPERATURE,
+		CO2LEVEL,
+		HUMIDITY
 	}
 
 	enum ConditionOperationAvro {
-		EQUAL,
+		EQUALS,
 		GREATER_THAN,
-		LESS_THAN,
-		NOT_EQUAL
+		LOWER_THAN
 	}
 
 	enum ActionTypeAvro {
-		TURN_ON,
-		TURN_OFF,
-		TOGGLE
+		ACTIVATE,
+		DEACTIVATE,
+		INVERSE,
+		SET_VALUE
 	}
 
 	record DeviceAddedEventAvro {

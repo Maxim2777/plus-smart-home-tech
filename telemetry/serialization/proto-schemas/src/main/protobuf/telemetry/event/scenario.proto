@@ -6,18 +6,18 @@ option java_package = "ru.yandex.practicum.grpc.telemetry.event";
 option java_multiple_files = true;
 
 enum ConditionTypeProto {
-  TEMPERATURE = 0;
-  HUMIDITY = 1;
-  MOTION = 2;
-  CO2 = 3;
-  LUMINOSITY = 4;
+  MOTION = 0;
+  LUMINOSITY = 1;
+  SWITCH = 2;
+  TEMPERATURE = 3;
+  CO2LEVEL = 4;
+  HUMIDITY = 5;
 }
 
 enum ConditionOperationProto {
-  EQUAL = 0;
+  EQUALS = 0;
   GREATER_THAN = 1;
-  LESS_THAN = 2;
-  NOT_EQUAL = 3;
+  LOWER_THAN = 2;
 }
 
 message ScenarioConditionProto {
@@ -32,9 +32,10 @@ message ScenarioConditionProto {
 }
 
 enum ActionTypeProto {
-  TURN_ON = 0;
-  TURN_OFF = 1;
-  TOGGLE = 2;
+  ACTIVATE = 0;
+  DEACTIVATE = 1;
+  INVERSE = 2;
+  SET_VALUE = 3;
 }
 
 message DeviceActionProto {
