@@ -1,3 +1,4 @@
+/*
 package ru.yandex.practicum.collector.service;
 
 import lombok.RequiredArgsConstructor;
@@ -110,4 +111,4 @@ public class HubEventService {
                 .setPayload(payload)
                 .build();
     }
-}
+}*/

@@ -1,3 +1,4 @@
+/*
 package ru.yandex.practicum.collector.mapper;
 
 import org.springframework.stereotype.Component;
@@ -116,4 +117,4 @@ public class HubEventMapper {
         return action;
     }
 
-}
+}*/
