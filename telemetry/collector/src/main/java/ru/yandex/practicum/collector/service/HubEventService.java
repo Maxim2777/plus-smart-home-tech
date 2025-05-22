@@ -115,7 +115,7 @@ public class HubEventService {
                 ScenarioAddedEventProto s = proto.getScenarioAdded();
                 ScenarioAddedEvent model = new ScenarioAddedEvent();
                 model.setName(s.getName());
-                model.setName(s.getName());
+
                 List<ScenarioCondition> mappedConditions = s.getConditionList().stream()
                         .map(p -> {
                             ScenarioCondition c = new ScenarioCondition();
@@ -139,12 +139,17 @@ public class HubEventService {
                             DeviceAction a = new DeviceAction();
                             a.setSensorId(p.getSensorId());
                             a.setType(ActionType.valueOf(p.getType().name()));
-                            a.setValue(p.hasValue() ? p.getValue() : null); // если поле есть — запишем, иначе null
+                            a.setValue(p.hasValue() ? p.getValue() : null);
                             return a;
                         })
                         .collect(Collectors.toList());
+
+                model.setConditions(mappedConditions);
+                model.setActions(mappedActions);
+
                 event = model;
             }
+
             case SCENARIO_REMOVED -> {
                 ScenarioRemovedEventProto s = proto.getScenarioRemoved();
                 ScenarioRemovedEvent model = new ScenarioRemovedEvent();
