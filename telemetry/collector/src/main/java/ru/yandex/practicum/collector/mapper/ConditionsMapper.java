@@ -20,7 +20,7 @@ public class ConditionsMapper {
         Object value = scenario.getValue();
         switch (value) {
             case Integer i -> builder.setValue(i);
-            case Boolean b -> builder.setValue(b ? 1 : 0); // т.к. Avro-схема поддерживает только int
+            case Boolean b -> builder.setValue(b);
             default -> builder.setValue(null);
         }
 
