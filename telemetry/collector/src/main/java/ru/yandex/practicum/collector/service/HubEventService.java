@@ -7,6 +7,7 @@ import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.collector.mapper.ConditionsMapper;
 import ru.yandex.practicum.collector.model.hub.*;
 import ru.yandex.practicum.collector.model.hub.HubEvent;
 import ru.yandex.practicum.kafka.telemetry.event.*;
@@ -49,29 +50,8 @@ public class HubEventService {
             case SCENARIO_ADDED -> {
                 ScenarioAddedEvent e = (ScenarioAddedEvent) event;
 
-                List<ScenarioConditionAvro> conditions = e.getConditions().stream()
-                        .map(c -> {
-                            Object rawValue = c.getValue();
-                            ScenarioConditionAvro.Builder builder = ScenarioConditionAvro.newBuilder()
-                                    .setSensorId(c.getSensorId())
-                                    .setType(ConditionTypeAvro.valueOf(c.getType().name()))
-                                    .setOperation(ConditionOperationAvro.valueOf(c.getOperation().name()));
+                List<ScenarioConditionAvro> conditions = ConditionsMapper.condListToAvro(e.getConditions());
 
-                            // Установка значения в union: null, int, boolean
-                            if (rawValue == null) {
-                                builder.setValue(null);
-                            } else if (rawValue instanceof Integer) {
-                                builder.setValue((Integer) rawValue);
-                            } else if (rawValue instanceof Boolean) {
-                                builder.setValue((Boolean) rawValue);
-                            } else {
-                                log.warn("Неподдерживаемый тип value в ScenarioCondition: {} (type: {})", rawValue, rawValue.getClass());
-                                builder.setValue(null);
-                            }
-
-                            return builder.build();
-                        })
-                        .toList();
 
                 List<DeviceActionAvro> actions = e.getActions().stream()
                         .map(a -> DeviceActionAvro.newBuilder()
