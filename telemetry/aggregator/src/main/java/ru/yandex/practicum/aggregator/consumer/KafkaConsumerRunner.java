@@ -30,7 +30,7 @@ public class KafkaConsumerRunner {
             }
         } catch (WakeupException ignored) {
         } finally {
-            eventHandler.shutdown(); // гарантированное завершение
+            eventHandler.shutdown();
         }
     }
 

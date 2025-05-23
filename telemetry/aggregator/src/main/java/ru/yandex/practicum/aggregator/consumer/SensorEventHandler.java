@@ -42,7 +42,7 @@ public class SensorEventHandler {
             }
         }
 
-        commitOffsets(); // финальный коммит после пачки
+        commitOffsets();
     }
 
     private void commitOffsets() {
