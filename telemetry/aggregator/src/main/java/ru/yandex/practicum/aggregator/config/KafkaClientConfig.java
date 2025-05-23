@@ -42,8 +42,8 @@ public class KafkaClientConfig {
         return new KafkaProducer<>(props);
     }
 
-    @Bean
-    public Producer<String, SensorsSnapshotAvro> kafkaSnapshotProducer() {
+    @Bean(name = "snapshotKafkaProducer")
+    public Producer<String, SensorsSnapshotAvro> snapshotKafkaProducer() {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());

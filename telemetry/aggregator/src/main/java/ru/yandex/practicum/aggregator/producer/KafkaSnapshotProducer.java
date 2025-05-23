@@ -4,15 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
-
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class KafkaSnapshotProducer {
 
+    @Qualifier("snapshotKafkaProducer") // Привязка к бин-имени
     private final Producer<String, SensorsSnapshotAvro> producer;
 
     public void send(String topic, String key, SensorsSnapshotAvro message) {
@@ -34,5 +35,4 @@ public class KafkaSnapshotProducer {
     public void flush() {
         producer.flush();
     }
-
 }
