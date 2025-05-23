@@ -13,7 +13,7 @@
 
     <artifactId>aggregator</artifactId>
     <name>telemetry-aggregator</name>
-    <packaging>jar</packaging> <!-- 🛠️ Обязательно для исполняемого JAR -->
+    <packaging>jar</packaging>
 
     <dependencies>
         <!-- Spring Boot -->
@@ -22,32 +22,26 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
-        <!-- Kafka -->
+        <!-- Spring Kafka -->
         <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
         </dependency>
 
+        <!-- Confluent Avro serializer -->
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-avro-serializer</artifactId>
             <version>7.5.3</version>
         </dependency>
 
-        <!-- Avro -->
+        <!-- Apache Avro -->
         <dependency>
             <groupId>org.apache.avro</groupId>
             <artifactId>avro</artifactId>
         </dependency>
 
-        <!-- Автоконфигурация из application.yml -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- Общие Avro-схемы -->
+        <!-- Avro schemas (локальная зависимость) -->
         <dependency>
             <groupId>ru.yandex.practicum</groupId>
             <artifactId>avro-schemas</artifactId>
@@ -58,6 +52,13 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Application YAML metadata -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
     </dependencies>
@@ -81,7 +82,7 @@
                 </configuration>
             </plugin>
 
-            <!-- 🟢 Плагин для сборки исполняемого JAR -->
+            <!-- Плагин Spring Boot -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -95,5 +96,6 @@
             </plugin>
         </plugins>
     </build>
+
 </project>
 
