@@ -12,7 +12,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class KafkaConsumerRunner {
+public class SensorEventConsumerRunner {
 
     private final SensorEventHandler eventHandler;
     private final KafkaConsumer<String, SensorEventAvro> consumer;
