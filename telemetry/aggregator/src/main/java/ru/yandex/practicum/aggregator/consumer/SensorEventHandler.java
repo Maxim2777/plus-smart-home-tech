@@ -52,9 +52,7 @@ public class SensorEventHandler {
 
     public void shutdown() {
         consumer.commitSync(currentOffsets);
-        producer.flush();
         consumer.close();
-        producer.close();
     }
 }
 
