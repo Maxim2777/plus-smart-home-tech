@@ -8,7 +8,7 @@ import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 
 @Service
 @RequiredArgsConstructor
-public class KafkaProducer {
+public class KafkaProducerAggregator {
 
     private final Producer<String, SensorsSnapshotAvro> producer;
 

@@ -7,7 +7,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.aggregator.producer.KafkaProducer;
+import ru.yandex.practicum.aggregator.producer.KafkaProducerAggregator;
 import ru.yandex.practicum.aggregator.service.AggregationService;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 
@@ -19,7 +19,7 @@ import java.util.Map;
 public class SensorEventHandler {
 
     private final AggregationService aggregationService;
-    private final KafkaProducer producer;
+    private final KafkaProducerAggregator producer;
     private final KafkaConsumer<String, SensorEventAvro> consumer;
 
     private final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
