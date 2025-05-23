@@ -33,9 +33,11 @@ public class AggregationService {
                         .build()
         );
 
-        SensorStateAvro oldState = snapshot.getSensorsState().get(sensorId);
+        SensorStateAvro oldState = snapshot.getSensorsState() != null
+                ? snapshot.getSensorsState().get(sensorId)
+                : null;
 
-        // если событие старое или данные не изменились — ничего не делаем
+// если событие старое или данные не изменились — ничего не делаем
         if (oldState != null) {
             boolean isOld = oldState.getTimestamp() >= event.getTimestamp();
             boolean isSame = oldState.getData().equals(event.getPayload());
@@ -44,7 +46,12 @@ public class AggregationService {
             }
         }
 
-        // обновляем снапшот
+// Инициализируем карту, если она пуста
+        if (snapshot.getSensorsState() == null) {
+            snapshot.setSensorsState(new HashMap<>());
+        }
+
+// обновляем снапшот
         snapshot.getSensorsState().put(sensorId, newState);
         snapshot.setTimestamp(event.getTimestamp());
         snapshotStorage.put(hubId, snapshot);
