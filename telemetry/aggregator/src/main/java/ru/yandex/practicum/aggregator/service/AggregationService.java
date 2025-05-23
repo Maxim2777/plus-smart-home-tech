@@ -14,31 +14,25 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AggregationService {
 
-    private final Map<String, SensorsSnapshotAvro> snapshotsByHubId = new HashMap<>(); // key = hubId
+    private final Map<String, SensorsSnapshotAvro> snapshotsByHubId = new HashMap<>();
 
     public Optional<SensorsSnapshotAvro> aggregateEvent(SensorEventAvro event) {
-
         String hubId = event.getHubId();
         String sensorId = event.getId();
 
-        SensorsSnapshotAvro hubSnapshot = snapshotsByHubId.computeIfAbsent(hubId, hubIdKey -> {
-            SensorsSnapshotAvro newSnapshot = new SensorsSnapshotAvro();
-            newSnapshot.setHubId(hubIdKey);
-            newSnapshot.setTimestamp(event.getTimestamp());
-            newSnapshot.setSensorsState(new HashMap<>());
-            return newSnapshot;
+        SensorsSnapshotAvro hubSnapshot = snapshotsByHubId.computeIfAbsent(hubId, id -> {
+            SensorsSnapshotAvro snapshot = new SensorsSnapshotAvro();
+            snapshot.setHubId(id);
+            snapshot.setTimestamp(event.getTimestamp());
+            snapshot.setSensorsState(new HashMap<>());
+            return snapshot;
         });
 
-        Map<String, SensorStateAvro> sensorsState = hubSnapshot.getSensorsState(); // key = sensorId
-        SensorStateAvro oldState = sensorsState.get(sensorId);
+        Map<String, SensorStateAvro> sensorsState = hubSnapshot.getSensorsState();
+        SensorStateAvro existingState = sensorsState.get(sensorId);
 
-        if (oldState != null) {
-            boolean isOlderTimestamp = event.getTimestamp().isBefore(oldState.getTimestamp());
-            boolean isSameData = event.getPayload().equals(oldState.getData());
-
-            if (isOlderTimestamp || isSameData) {
-                return Optional.empty();
-            }
+        if (!shouldUpdateState(event, existingState)) {
+            return Optional.empty();
         }
 
         SensorStateAvro updatedSensorState = new SensorStateAvro();
@@ -49,5 +43,16 @@ public class AggregationService {
         hubSnapshot.setTimestamp(event.getTimestamp());
 
         return Optional.of(hubSnapshot);
+    }
+
+    private boolean shouldUpdateState(SensorEventAvro event, SensorStateAvro existingState) {
+        if (existingState == null) {
+            return true;
+        }
+
+        boolean isNewer = event.getTimestamp().isAfter(existingState.getTimestamp());
+        boolean isChanged = !event.getPayload().equals(existingState.getData());
+
+        return isNewer && isChanged;
     }
 }
