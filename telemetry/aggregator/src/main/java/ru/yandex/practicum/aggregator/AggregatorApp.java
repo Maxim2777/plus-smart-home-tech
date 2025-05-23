@@ -4,15 +4,16 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.ConfigurableApplicationContext;
-import ru.yandex.practicum.aggregator.consumer.AggregationStarter;
+import ru.yandex.practicum.aggregator.consumer.KafkaConsumerRunner;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
 public class AggregatorApp {
+
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(AggregatorApp.class, args);
 
-        AggregationStarter aggregator = context.getBean(AggregationStarter.class);
-        aggregator.start();
+        KafkaConsumerRunner consumerRunner = context.getBean(KafkaConsumerRunner.class);
+        consumerRunner.start();
     }
 }
