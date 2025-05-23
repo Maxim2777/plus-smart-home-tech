@@ -1,0 +1,13 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: aggregator-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: ru.yandex.practicum.telemetry.aggregation.serialization.SensorEventDeserializer
+
+logging:
+  level:
+    root: INFO
+    ru.yandex.practicum: DEBUG
