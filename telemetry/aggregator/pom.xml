@@ -11,8 +11,8 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>aggregation</artifactId>
-    <name>telemetry-aggregation</name>
+    <artifactId>aggregator</artifactId>
+    <name>telemetry-aggregator</name>
     <packaging>jar</packaging> <!-- 🛠️ Обязательно для исполняемого JAR -->
 
     <dependencies>
