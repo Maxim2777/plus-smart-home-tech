@@ -1,3 +1,4 @@
+/*
 package ru.yandex.practicum.aggregator.deserializer;
 
 import org.apache.avro.Schema;
@@ -34,4 +35,4 @@ public class BaseAvroDeserializer<T extends SpecificRecordBase> implements Deser
             throw new SerializationException("Ошибка сериализации данных", e);
         }
     }
-}
+}*/
