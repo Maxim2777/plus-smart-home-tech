@@ -27,7 +27,7 @@ public class SensorEventHandler {
     public void handle(ConsumerRecords<String, SensorEventAvro> records) {
         int count = 0;
         for (ConsumerRecord<String, SensorEventAvro> record : records) {
-            aggregationService.updateState(record.value())
+            aggregationService.aggregateEvent(record.value())
                     .ifPresent(snapshot ->
                             producer.send("telemetry.snapshots.v1", snapshot.getHubId(), snapshot)
                     );

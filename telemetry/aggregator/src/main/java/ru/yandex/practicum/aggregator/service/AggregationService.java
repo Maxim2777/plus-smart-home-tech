@@ -14,14 +14,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AggregationService {
 
-    private final Map<String, SensorsSnapshotAvro> snapshots = new HashMap<>(); // key = hubId
+    private final Map<String, SensorsSnapshotAvro> snapshotsByHubId = new HashMap<>(); // key = hubId
 
-    public Optional<SensorsSnapshotAvro> updateState(SensorEventAvro event) {
+    public Optional<SensorsSnapshotAvro> aggregateEvent(SensorEventAvro event) {
 
         String hubId = event.getHubId();
         String sensorId = event.getId();
 
-        SensorsSnapshotAvro snapshot = snapshots.computeIfAbsent(hubId, hubIdKey -> {
+        SensorsSnapshotAvro hubSnapshot = snapshotsByHubId.computeIfAbsent(hubId, hubIdKey -> {
             SensorsSnapshotAvro newSnapshot = new SensorsSnapshotAvro();
             newSnapshot.setHubId(hubIdKey);
             newSnapshot.setTimestamp(event.getTimestamp());
@@ -29,7 +29,7 @@ public class AggregationService {
             return newSnapshot;
         });
 
-        Map<String, SensorStateAvro> sensorsState = snapshot.getSensorsState(); // key = sensorId
+        Map<String, SensorStateAvro> sensorsState = hubSnapshot.getSensorsState(); // key = sensorId
         SensorStateAvro oldState = sensorsState.get(sensorId);
 
         if (oldState != null) {
@@ -41,13 +41,13 @@ public class AggregationService {
             }
         }
 
-        SensorStateAvro newState = new SensorStateAvro();
-        newState.setTimestamp(event.getTimestamp());
-        newState.setData(event.getPayload());
+        SensorStateAvro updatedSensorState = new SensorStateAvro();
+        updatedSensorState.setTimestamp(event.getTimestamp());
+        updatedSensorState.setData(event.getPayload());
 
-        sensorsState.put(sensorId, newState);
-        snapshot.setTimestamp(event.getTimestamp());
+        sensorsState.put(sensorId, updatedSensorState);
+        hubSnapshot.setTimestamp(event.getTimestamp());
 
-        return Optional.of(snapshot);
+        return Optional.of(hubSnapshot);
     }
 }
