@@ -6,8 +6,8 @@ import org.apache.avro.io.DatumReader;
 import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.avro.specific.SpecificRecordBase;
+import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Deserializer;
-import ru.yandex.practicum.aggregator.exception.DeserializationException;
 
 public class BaseAvroDeserializer<T extends SpecificRecordBase> implements Deserializer<T> {
     private final DecoderFactory decoderFactory;
@@ -31,7 +31,7 @@ public class BaseAvroDeserializer<T extends SpecificRecordBase> implements Deser
             }
             return null;
         } catch (Exception e) {
-            throw new DeserializationException("Ошибка десериализации данных из топика [" + topic + "]", e);
+            throw new SerializationException("Ошибка десериализации", e);
         }
     }
 }
