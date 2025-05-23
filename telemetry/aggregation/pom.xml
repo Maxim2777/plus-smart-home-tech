@@ -13,6 +13,7 @@
 
     <artifactId>aggregation</artifactId>
     <name>telemetry-aggregation</name>
+    <packaging>jar</packaging> <!-- 🛠️ Обязательно для исполняемого JAR -->
 
     <dependencies>
         <!-- Spring Boot -->
@@ -40,7 +41,7 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Общие схемы Avro (снапшоты, сенсоры) -->
+        <!-- Общие Avro-схемы -->
         <dependency>
             <groupId>ru.yandex.practicum</groupId>
             <artifactId>avro-schemas</artifactId>
@@ -67,11 +68,19 @@
                 </configuration>
             </plugin>
 
-            <!-- Spring Boot -->
+            <!-- 🟢 Плагин для сборки исполняемого JAR -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
 </project>
+
