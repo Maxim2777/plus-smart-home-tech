@@ -25,7 +25,6 @@ public class SensorEventHandler {
     private final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
 
     public void handle(ConsumerRecords<String, SensorEventAvro> records) {
-        int count = 0;
         for (ConsumerRecord<String, SensorEventAvro> record : records) {
             aggregationService.aggregateEvent(record.value())
                     .ifPresent(snapshot ->
@@ -36,10 +35,6 @@ public class SensorEventHandler {
                     new TopicPartition(record.topic(), record.partition()),
                     new OffsetAndMetadata(record.offset() + 1)
             );
-
-            if (++count % 10 == 0) {
-                commitOffsets();
-            }
         }
 
         commitOffsets();
@@ -49,10 +44,8 @@ public class SensorEventHandler {
         consumer.commitAsync(currentOffsets, null);
     }
 
-
     public void shutdown() {
         consumer.commitSync(currentOffsets);
         consumer.close();
     }
 }
-

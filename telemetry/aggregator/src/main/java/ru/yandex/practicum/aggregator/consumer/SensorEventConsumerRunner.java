@@ -33,5 +33,4 @@ public class SensorEventConsumerRunner {
             eventHandler.shutdown();
         }
     }
-
 }
