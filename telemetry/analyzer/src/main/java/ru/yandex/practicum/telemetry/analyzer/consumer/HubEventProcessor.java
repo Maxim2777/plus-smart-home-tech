@@ -93,18 +93,23 @@ public class HubEventProcessor implements Runnable {
                 });
 
                 Object rawValue = conditionAvro.getValue();
-                Integer value = null;
-                if (rawValue instanceof Integer i) value = i;
-                else if (rawValue instanceof Boolean b) value = b ? 1 : 0;
 
                 Condition condition = new Condition();
                 condition.setType(conditionAvro.getType().name());
                 condition.setOperation(conditionAvro.getOperation().name());
-                condition.setValueInt(value);
+
+                if (rawValue instanceof Integer i) {
+                    condition.setValueInt(i);
+                } else if (rawValue instanceof Boolean b) {
+                    condition.setValueBool(b);
+                } else {
+                    log.warn("⚠️ Неизвестный тип value у condition: {}", rawValue != null ? rawValue.getClass().getSimpleName() : "null");
+                }
+
                 condition = conditionRepository.save(condition);
 
                 ScenarioCondition link = new ScenarioCondition();
-                link.setScenario(savedScenario); // используем финализированную переменную
+                link.setScenario(savedScenario);
                 link.setSensor(sensorRepository.getReferenceById(sensorId));
                 link.setCondition(condition);
                 scenarioConditionRepository.save(link);
