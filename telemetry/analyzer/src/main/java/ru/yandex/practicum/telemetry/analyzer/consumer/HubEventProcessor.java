@@ -100,7 +100,7 @@ public class HubEventProcessor implements Runnable {
                 Condition condition = new Condition();
                 condition.setType(conditionAvro.getType().name());
                 condition.setOperation(conditionAvro.getOperation().name());
-                condition.setValue(value);
+                condition.setValueInt(value);
                 condition = conditionRepository.save(condition);
 
                 ScenarioCondition link = new ScenarioCondition();
