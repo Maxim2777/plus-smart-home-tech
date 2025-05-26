@@ -4,8 +4,6 @@ import com.google.protobuf.Timestamp;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.grpc.telemetry.event.ActionTypeProto;
-import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionRequest;
 import ru.yandex.practicum.kafka.telemetry.event.ClimateSensorAvro;
 import ru.yandex.practicum.kafka.telemetry.event.LightSensorAvro;
@@ -14,6 +12,7 @@ import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorStateAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SwitchSensorAvro;
 import ru.yandex.practicum.kafka.telemetry.event.TemperatureSensorAvro;
+import ru.yandex.practicum.telemetry.analyzer.mapper.DeviceActionRequestMapper;
 import ru.yandex.practicum.telemetry.analyzer.model.*;
 import ru.yandex.practicum.telemetry.analyzer.repository.ScenarioRepository;
 import ru.yandex.practicum.telemetry.analyzer.service.grpc.HubRouterClient;
@@ -49,25 +48,12 @@ public class ScenarioEvaluationService {
             if (matched) {
                 log.info("🎯 Сценарий '{}' активирован", scenario.getName());
 
-                for (ScenarioAction actionLink : scenario.getActions()) {
-                    DeviceActionProto actionProto = DeviceActionProto.newBuilder()
-                            .setSensorId(actionLink.getSensor().getId())
-                            .setType(ActionTypeProto.valueOf(actionLink.getAction().getType()))
-                            .setValue(actionLink.getAction().getValue())
-                            .build();
-
-                    DeviceActionRequest request = DeviceActionRequest.newBuilder()
-                            .setHubId(hubId)
-                            .setScenarioName(scenario.getName())
-                            .setAction(actionProto)
-                            .setTimestamp(toProtoTimestamp(snapshot.getTimestamp().toEpochMilli()))
-                            .build();
-
-                    hubRouterClient.sendAction(request);
-                }
+                List<DeviceActionRequest> requests = DeviceActionRequestMapper.mapAll(scenario, hubId);
+                requests.forEach(hubRouterClient::sendAction);
             }
         }
     }
+
 
     private boolean evaluateCondition(Condition condition, SensorStateAvro state) {
         Integer actual = extractValueFromSensor(state);
