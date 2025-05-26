@@ -1,6 +1,5 @@
 package ru.yandex.practicum.telemetry.analyzer.service.grpc;
 
-import com.google.protobuf.Empty;
 import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

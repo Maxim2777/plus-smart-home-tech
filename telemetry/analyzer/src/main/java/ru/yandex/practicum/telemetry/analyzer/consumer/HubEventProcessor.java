@@ -12,8 +12,6 @@ import ru.yandex.practicum.kafka.telemetry.event.ScenarioAddedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ScenarioRemovedEventAvro;
 import ru.yandex.practicum.telemetry.analyzer.model.Action;
 import ru.yandex.practicum.telemetry.analyzer.model.Condition;
-import ru.yandex.practicum.telemetry.analyzer.model.ScenarioAction;
-import ru.yandex.practicum.telemetry.analyzer.model.ScenarioCondition;
 import ru.yandex.practicum.telemetry.analyzer.model.Sensor;
 import ru.yandex.practicum.telemetry.analyzer.model.Scenario;
 import ru.yandex.practicum.telemetry.analyzer.repository.ActionRepository;
@@ -80,7 +78,6 @@ public class HubEventProcessor implements Runnable {
             Scenario scenario = new Scenario();
             scenario.setHubId(hubId);
             scenario.setName(scenarioAdded.getName());
-            final Scenario savedScenario = scenarioRepository.save(scenario); // ключевое изменение
 
             scenarioAdded.getConditions().forEach(conditionAvro -> {
                 String sensorId = conditionAvro.getSensorId();
@@ -106,13 +103,7 @@ public class HubEventProcessor implements Runnable {
                     log.warn("⚠️ Неизвестный тип value у condition: {}", rawValue != null ? rawValue.getClass().getSimpleName() : "null");
                 }
 
-                condition = conditionRepository.save(condition);
-
-                ScenarioCondition link = new ScenarioCondition();
-                link.setScenario(savedScenario);
-                link.setSensor(sensorRepository.getReferenceById(sensorId));
-                link.setCondition(condition);
-                scenarioConditionRepository.save(link);
+                scenario.getConditions().put(sensorId, condition);
             });
 
             scenarioAdded.getActions().forEach(actionAvro -> {
@@ -125,24 +116,22 @@ public class HubEventProcessor implements Runnable {
                     return sensorRepository.save(s);
                 });
 
-                Integer value = actionAvro.getValue() != null ? (Integer) actionAvro.getValue() : null;
-
                 Action action = new Action();
                 action.setType(actionAvro.getType().name());
-                action.setValue(value);
-                action = actionRepository.save(action);
 
-                ScenarioAction link = new ScenarioAction();
-                link.setScenario(savedScenario); // то же здесь
-                link.setSensor(sensorRepository.getReferenceById(sensorId));
-                link.setAction(action);
-                scenarioActionRepository.save(link);
+                if (actionAvro.getValue() instanceof Integer i) {
+                    action.setValue(i);
+                }
+
+                scenario.getActions().put(sensorId, action);
             });
+
+            scenarioRepository.save(scenario);
 
             log.info("✅ Добавлен сценарий '{}' с {} условиями и {} действиями",
                     scenarioAdded.getName(), scenarioAdded.getConditions().size(), scenarioAdded.getActions().size());
-
-        } else if (payload instanceof ScenarioRemovedEventAvro scenarioRemoved) {
+        }
+        else if (payload instanceof ScenarioRemovedEventAvro scenarioRemoved) {
             scenarioRepository.findByHubIdAndName(hubId, scenarioRemoved.getName())
                     .ifPresentOrElse(
                             scenarioRepository::delete,

@@ -2,8 +2,8 @@ package ru.yandex.practicum.telemetry.analyzer.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "actions")
@@ -14,6 +14,5 @@ public class Action {
     private Long id;
 
     private String type;
-
-    private Integer value; // БД: value
+    private Integer value;
 }

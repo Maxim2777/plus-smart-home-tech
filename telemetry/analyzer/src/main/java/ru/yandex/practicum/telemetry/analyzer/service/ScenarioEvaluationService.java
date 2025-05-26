@@ -39,21 +39,24 @@ public class ScenarioEvaluationService {
         }
 
         for (Scenario scenario : scenarios) {
-            boolean matched = scenario.getConditions().stream().allMatch(conditionLink -> {
-                SensorStateAvro state = states.get(conditionLink.getSensor().getId());
+            boolean matched = scenario.getConditions().entrySet().stream().allMatch(entry -> {
+                String sensorId = entry.getKey();
+                Condition condition = entry.getValue();
+                SensorStateAvro state = states.get(sensorId);
                 if (state == null) return false;
-                return evaluateCondition(conditionLink.getCondition(), state);
+                return evaluateCondition(condition, state);
             });
 
             if (matched) {
                 log.info("🎯 Сценарий '{}' активирован", scenario.getName());
 
-                List<DeviceActionRequest> requests = DeviceActionRequestMapper.mapAll(scenario, hubId);
-                requests.forEach(hubRouterClient::sendAction);
+                scenario.getActions().forEach((sensorId, action) -> {
+                    DeviceActionRequest request = DeviceActionRequestMapper.map(scenario, hubId, sensorId, action);
+                    hubRouterClient.sendAction(request);
+                });
             }
         }
     }
-
 
     private boolean evaluateCondition(Condition condition, SensorStateAvro state) {
         Integer actual = extractValueFromSensor(state);

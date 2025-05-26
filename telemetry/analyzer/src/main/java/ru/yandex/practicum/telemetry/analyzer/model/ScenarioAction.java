@@ -1,4 +1,4 @@
-package ru.yandex.practicum.telemetry.analyzer.model;
+/*package ru.yandex.practicum.telemetry.analyzer.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -29,5 +29,5 @@ public class ScenarioAction {
     @ManyToOne
     @JoinColumn(name = "action_id")
     private Action action;
-}
+}*/
 

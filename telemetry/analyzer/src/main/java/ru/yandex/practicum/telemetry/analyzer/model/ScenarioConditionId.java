@@ -1,4 +1,4 @@
-package ru.yandex.practicum.telemetry.analyzer.model;
+/*package ru.yandex.practicum.telemetry.analyzer.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -12,5 +12,5 @@ public class ScenarioConditionId implements Serializable {
     private Long scenario;
     private String sensor;
     private Long condition;
-}
+}*/
 

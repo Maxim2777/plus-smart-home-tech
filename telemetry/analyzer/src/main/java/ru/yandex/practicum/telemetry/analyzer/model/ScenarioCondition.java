@@ -1,3 +1,4 @@
+/*
 package ru.yandex.practicum.telemetry.analyzer.model;
 
 import jakarta.persistence.Entity;
@@ -32,4 +33,5 @@ public class ScenarioCondition {
     @JoinColumn(name = "condition_id")
     private Condition condition;
 }
+*/
 

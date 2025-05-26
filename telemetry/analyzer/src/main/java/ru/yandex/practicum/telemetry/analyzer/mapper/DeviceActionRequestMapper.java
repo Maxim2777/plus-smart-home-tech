@@ -6,18 +6,15 @@ import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionRequest;
 import ru.yandex.practicum.telemetry.analyzer.model.Action;
 import ru.yandex.practicum.telemetry.analyzer.model.Scenario;
-import ru.yandex.practicum.telemetry.analyzer.model.ScenarioAction;
 
 import java.time.Instant;
 import java.util.List;
 
 public class DeviceActionRequestMapper {
 
-    public static DeviceActionRequest map(Scenario scenario, String hubId, ScenarioAction link) {
-        Action action = link.getAction();
-
+    public static DeviceActionRequest map(Scenario scenario, String hubId, String sensorId, Action action) {
         DeviceActionProto.Builder actionBuilder = DeviceActionProto.newBuilder()
-                .setSensorId(link.getSensor().getId())
+                .setSensorId(sensorId)
                 .setType(ActionTypeProto.valueOf(action.getType()));
 
         if (action.getValue() != null) {
@@ -33,8 +30,8 @@ public class DeviceActionRequestMapper {
     }
 
     public static List<DeviceActionRequest> mapAll(Scenario scenario, String hubId) {
-        return scenario.getActions().stream()
-                .map(link -> map(scenario, hubId, link))
+        return scenario.getActions().entrySet().stream()
+                .map(entry -> map(scenario, hubId, entry.getKey(), entry.getValue()))
                 .toList();
     }
 
