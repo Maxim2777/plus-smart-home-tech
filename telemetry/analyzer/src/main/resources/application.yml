@@ -1,17 +1,48 @@
 spring:
+  application:
+    name: analyzer
+
   datasource:
     url: jdbc:postgresql://localhost:5432/telemetry_analyzer
-    username: your_user
-    password: your_password
+    username: user
+    password: password
     driver-class-name: org.postgresql.Driver
+
+  sql:
+    init:
+      mode: always               # ← выполняем schema.sql при запуске
 
   jpa:
     hibernate:
-      ddl-auto: validate       # или update, если автосоздание
+      ddl-auto: validate         # можно поставить update
     show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+analyzer:
+  kafka:
+    consumers:
+      hubs:
+        properties:
+          bootstrap.servers: localhost:9092
+          group.id: telemetry-analyzer-hubs
+          client.id: telemetry.analyzer.hubs
+          auto.offset.reset: earliest
+          key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+          value.deserializer: ru.yandex.practicum.kafka.deserializer.HubEventAvroDeserializer
+        topics:
+          hubs-events: telemetry.hubs.v1
+      snapshots:
+        properties:
+          bootstrap.servers: localhost:9092
+          group.id: telemetry-analyzer-snapshots
+          client.id: telemetry.analyzer.snapshots
+          auto.offset.reset: earliest
+          key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+          value.deserializer: ru.yandex.practicum.kafka.deserializer.SensorsSnapshotAvroDeserializer
+        topics:
+          snapshots-events: telemetry.snapshots.v1
 
 grpc:
   client:
@@ -20,5 +51,6 @@ grpc:
       enableKeepAlive: true
       keepAliveWithoutCalls: true
       negotiationType: plaintext
+
 
 
