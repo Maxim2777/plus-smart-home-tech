@@ -1,14 +1,17 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:analyzer;DB_CLOSE_DELAY=-1
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: jdbc:postgresql://localhost:5432/telemetry_analyzer
+    username: your_user
+    password: your_password
+    driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate       # или update, если автосоздание
     show-sql: true
-    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 grpc:
   client:
@@ -17,4 +20,5 @@ grpc:
       enableKeepAlive: true
       keepAliveWithoutCalls: true
       negotiationType: plaintext
+
 
