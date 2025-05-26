@@ -1,13 +1,14 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb
-    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:analyzer;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
     username: sa
-    password: password
+    password:
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
 
 grpc:
   client:
@@ -16,3 +17,4 @@ grpc:
       enableKeepAlive: true
       keepAliveWithoutCalls: true
       negotiationType: plaintext
+
