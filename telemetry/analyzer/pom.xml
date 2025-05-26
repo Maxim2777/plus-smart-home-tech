@@ -25,14 +25,15 @@
             <artifactId>spring-kafka</artifactId>
         </dependency>
 
-        <!-- Spring Data JPA + H2 (или PostgreSQL, если используешь) -->
+        <!-- Spring Data JPA + PostgreSQL -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.3</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -65,10 +66,9 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.30</version> <!-- или выше -->
+            <version>1.18.30</version>
             <scope>provided</scope>
         </dependency>
-
     </dependencies>
 
     <repositories>
