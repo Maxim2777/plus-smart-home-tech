@@ -1,11 +1,6 @@
 package ru.yandex.practicum.telemetry.analyzer.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -20,6 +15,5 @@ public class Action {
 
     private String type;
 
-    @Column(name = "val")
-    private Integer value;
+    private Integer value; // БД: value
 }
