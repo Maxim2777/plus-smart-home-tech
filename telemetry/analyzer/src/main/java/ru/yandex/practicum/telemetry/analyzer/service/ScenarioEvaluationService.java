@@ -73,10 +73,12 @@ public class ScenarioEvaluationService {
         Integer actual = extractValueFromSensor(state);
         if (actual == null) return false;
 
+        Integer expected = condition.getValueInt();
+
         return switch (condition.getOperation()) {
-            case "EQUALS" -> actual.equals(condition.getValue());
-            case "GREATER_THAN" -> actual > condition.getValue();
-            case "LOWER_THAN" -> actual < condition.getValue();
+            case "EQUALS" -> actual.equals(expected);
+            case "GREATER_THAN" -> actual > expected;
+            case "LOWER_THAN" -> actual < expected;
             default -> false;
         };
     }
