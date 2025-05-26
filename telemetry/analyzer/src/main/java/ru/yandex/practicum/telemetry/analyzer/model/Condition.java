@@ -16,6 +16,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Condition {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,7 +25,9 @@ public class Condition {
 
     private String operation;
 
-    @Column(name = "val")
-    private Integer value;
-}
+    @Column(name = "value_int")
+    private Integer valueInt;
 
+    @Column(name = "value_bool")
+    private Boolean valueBool;
+}
