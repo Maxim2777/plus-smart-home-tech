@@ -14,10 +14,6 @@ import ru.yandex.practicum.telemetry.analyzer.model.Action;
 import ru.yandex.practicum.telemetry.analyzer.model.Condition;
 import ru.yandex.practicum.telemetry.analyzer.model.Sensor;
 import ru.yandex.practicum.telemetry.analyzer.model.Scenario;
-import ru.yandex.practicum.telemetry.analyzer.repository.ActionRepository;
-import ru.yandex.practicum.telemetry.analyzer.repository.ConditionRepository;
-import ru.yandex.practicum.telemetry.analyzer.repository.ScenarioActionRepository;
-import ru.yandex.practicum.telemetry.analyzer.repository.ScenarioConditionRepository;
 import ru.yandex.practicum.telemetry.analyzer.repository.SensorRepository;
 import ru.yandex.practicum.telemetry.analyzer.repository.ScenarioRepository;
 
@@ -34,10 +30,6 @@ public class HubEventProcessor implements Runnable {
     private final KafkaConsumer<String, HubEventAvro> consumer;
     private final SensorRepository sensorRepository;
     private final ScenarioRepository scenarioRepository;
-    private final ConditionRepository conditionRepository;
-    private final ActionRepository actionRepository;
-    private final ScenarioConditionRepository scenarioConditionRepository;
-    private final ScenarioActionRepository scenarioActionRepository;
 
     private final Map<TopicPartition, OffsetAndMetadata> offsets = new HashMap<>();
 
