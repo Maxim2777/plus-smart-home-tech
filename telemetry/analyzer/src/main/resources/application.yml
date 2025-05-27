@@ -20,21 +20,6 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-
-analyzer:
-  kafka:
-    consumers:
-      snapshots:
-        properties:
-          bootstrap.servers: localhost:9092
-          group.id: telemetry-analyzer-snapshots
-          client.id: telemetry.analyzer.snapshots
-          auto.offset.reset: earliest
-          key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-          value.deserializer: ru.yandex.practicum.kafka.deserializer.SensorsSnapshotAvroDeserializer
-        topics:
-          snapshots-events: telemetry.snapshots.v1
-
 grpc:
   client:
     hub-router:
