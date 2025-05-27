@@ -29,7 +29,7 @@ public class ScenarioEvaluationService {
     private final ScenarioRepository scenarioRepository;
     private final HubRouterClient hubRouterClient;
 
-    @Transactional  // <--- ВАЖНО: открывает Hibernate-сессию
+    @Transactional
     public void evaluateAndExecute(SensorsSnapshotAvro snapshot) {
         String hubId = snapshot.getHubId();
         Map<String, SensorStateAvro> states = snapshot.getSensorsState();
@@ -38,6 +38,19 @@ public class ScenarioEvaluationService {
         if (scenarios.isEmpty()) {
             log.info("Нет сценариев для хаба {}", hubId);
             return;
+        }
+
+        log.info("🔍 Получено {} сценариев для хаба {}", scenarios.size(), hubId);
+        for (Scenario scenario : scenarios) {
+            log.info("🧪 Проверяю сценарий '{}'", scenario.getName());
+            scenario.getConditions().forEach((sensorId, condition) -> {
+                SensorStateAvro state = states.get(sensorId);
+                if (state == null) {
+                    log.warn("❌ Нет состояния сенсора {} в снапшоте", sensorId);
+                } else {
+                    log.info("✅ Состояние сенсора {}: тип = {}", sensorId, state.getData().getClass().getSimpleName());
+                }
+            });
         }
 
         for (Scenario scenario : scenarios) {
@@ -51,7 +64,6 @@ public class ScenarioEvaluationService {
 
             if (matched) {
                 log.info("🎯 Сценарий '{}' активирован", scenario.getName());
-
                 scenario.getActions().forEach((sensorId, action) -> {
                     DeviceActionRequest request = DeviceActionRequestMapper.map(scenario, hubId, sensorId, action);
                     hubRouterClient.sendAction(request);
