@@ -23,16 +23,6 @@ spring:
 analyzer:
   kafka:
     consumers:
-      hubs:
-        properties:
-          bootstrap.servers: localhost:9092
-          group.id: telemetry-analyzer-hubs
-          client.id: telemetry.analyzer.hubs
-          auto.offset.reset: earliest
-          key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-          value.deserializer: ru.yandex.practicum.kafka.deserializer.HubEventAvroDeserializer
-        topics:
-          hubs-events: telemetry.hubs.v1
       snapshots:
         properties:
           bootstrap.servers: localhost:9092
@@ -51,6 +41,3 @@ grpc:
       enableKeepAlive: true
       keepAliveWithoutCalls: true
       negotiationType: plaintext
-
-
-
