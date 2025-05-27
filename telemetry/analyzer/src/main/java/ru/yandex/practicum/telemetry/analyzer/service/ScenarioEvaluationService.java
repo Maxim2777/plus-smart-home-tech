@@ -1,6 +1,7 @@
 package ru.yandex.practicum.telemetry.analyzer.service;
 
 import com.google.protobuf.Timestamp;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class ScenarioEvaluationService {
     private final ScenarioRepository scenarioRepository;
     private final HubRouterClient hubRouterClient;
 
+    @Transactional  // <--- ВАЖНО: открывает Hibernate-сессию
     public void evaluateAndExecute(SensorsSnapshotAvro snapshot) {
         String hubId = snapshot.getHubId();
         Map<String, SensorStateAvro> states = snapshot.getSensorsState();
