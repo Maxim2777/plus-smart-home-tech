@@ -12,6 +12,7 @@ import ru.yandex.practicum.kafka.telemetry.event.ScenarioAddedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ScenarioRemovedEventAvro;
 import ru.yandex.practicum.telemetry.analyzer.model.Action;
 import ru.yandex.practicum.telemetry.analyzer.model.Condition;
+import ru.yandex.practicum.telemetry.analyzer.model.ConditionType;
 import ru.yandex.practicum.telemetry.analyzer.model.Sensor;
 import ru.yandex.practicum.telemetry.analyzer.model.Scenario;
 import ru.yandex.practicum.telemetry.analyzer.repository.SensorRepository;
@@ -84,7 +85,7 @@ public class HubEventProcessor implements Runnable {
                 Object rawValue = conditionAvro.getValue();
 
                 Condition condition = new Condition();
-                condition.setType(conditionAvro.getType().name());
+                condition.setType(ConditionType.valueOf(conditionAvro.getType().name()));
                 condition.setOperation(conditionAvro.getOperation().name());
 
                 if (rawValue instanceof Integer i) {

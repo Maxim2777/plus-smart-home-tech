@@ -73,7 +73,7 @@ public class ScenarioEvaluationService {
     }
 
     private boolean evaluateCondition(Condition condition, SensorStateAvro state) {
-        Integer actual = extractValueFromSensor(state);
+        Integer actual = extractValueFromSensor(condition, state);
         Integer expected = condition.getValueInt();
 
         log.info("🔍 Проверка условия: actual = {}, expected = {}, operation = {}", actual, expected, condition.getOperation());
@@ -94,20 +94,30 @@ public class ScenarioEvaluationService {
         };
     }
 
-    private Integer extractValueFromSensor(SensorStateAvro state) {
-        switch (state.getData().getClass().getSimpleName()) {
+    private Integer extractValueFromSensor(Condition condition, SensorStateAvro state) {
+        Object data = state.getData();
+        switch (data.getClass().getSimpleName()) {
             case "MotionSensorAvro":
-                return ((MotionSensorAvro) state.getData()).getMotion() ? 1 : 0;
+                return ((MotionSensorAvro) data).getMotion() ? 1 : 0;
             case "TemperatureSensorAvro":
-                return ((TemperatureSensorAvro) state.getData()).getTemperatureC();
+                return ((TemperatureSensorAvro) data).getTemperatureC();
             case "LightSensorAvro":
-                return ((LightSensorAvro) state.getData()).getLuminosity();
+                return ((LightSensorAvro) data).getLuminosity();
             case "SwitchSensorAvro":
-                return ((SwitchSensorAvro) state.getData()).getState() ? 1 : 0;
+                return ((SwitchSensorAvro) data).getState() ? 1 : 0;
             case "ClimateSensorAvro":
-                return ((ClimateSensorAvro) state.getData()).getCo2Level(); // или другое значение
+                ClimateSensorAvro sensor = (ClimateSensorAvro) data;
+                return switch (condition.getType()) {
+                    case TEMPERATURE -> sensor.getTemperatureC();
+                    case HUMIDITY -> sensor.getHumidity();
+                    case CO2LEVEL -> sensor.getCo2Level();
+                    default -> {
+                        log.warn("⚠️ Неизвестный тип условия для ClimateSensorAvro: {}", condition.getType());
+                        yield null;
+                    }
+                };
             default:
-                log.warn("⚠️ Неизвестный тип сенсора: {}", state.getData().getClass().getSimpleName());
+                log.warn("⚠️ Неизвестный тип сенсора: {}", data.getClass().getSimpleName());
                 return null;
         }
     }
