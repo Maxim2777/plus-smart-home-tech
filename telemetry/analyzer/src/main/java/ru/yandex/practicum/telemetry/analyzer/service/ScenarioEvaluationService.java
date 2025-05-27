@@ -74,15 +74,23 @@ public class ScenarioEvaluationService {
 
     private boolean evaluateCondition(Condition condition, SensorStateAvro state) {
         Integer actual = extractValueFromSensor(state);
-        if (actual == null) return false;
-
         Integer expected = condition.getValueInt();
+
+        log.info("🔍 Проверка условия: actual = {}, expected = {}, operation = {}", actual, expected, condition.getOperation());
+
+        if (actual == null || expected == null) {
+            log.warn("⚠️ Не удалось выполнить сравнение: actual или expected = null");
+            return false;
+        }
 
         return switch (condition.getOperation()) {
             case "EQUALS" -> actual.equals(expected);
             case "GREATER_THAN" -> actual > expected;
             case "LOWER_THAN" -> actual < expected;
-            default -> false;
+            default -> {
+                log.warn("⚠️ Неизвестная операция сравнения: {}", condition.getOperation());
+                yield false;
+            }
         };
     }
 
