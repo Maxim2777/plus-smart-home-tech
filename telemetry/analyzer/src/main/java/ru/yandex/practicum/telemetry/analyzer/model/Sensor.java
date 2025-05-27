@@ -14,5 +14,6 @@ public class Sensor {
     @Id
     private String id;
 
+
     private String hubId;
 }
