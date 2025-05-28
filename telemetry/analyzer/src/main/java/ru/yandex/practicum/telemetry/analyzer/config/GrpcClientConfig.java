@@ -9,10 +9,10 @@ import ru.yandex.practicum.grpc.telemetry.hubrouter.HubRouterControllerGrpc;
 public class GrpcClientConfig {
 
     @GrpcClient("hub-router")
-    private HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterStub;
+    private HubRouterControllerGrpc.HubRouterControllerBlockingStub injectedStub;
 
     @Bean
     public HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterStub() {
-        return hubRouterStub;
+        return injectedStub;
     }
 }
