@@ -18,4 +18,3 @@ public class DeviceAction {
     private ActionType type;
     private Integer value; // Optional
 }
-

@@ -8,4 +8,3 @@ public enum ConditionType {
     CO2LEVEL,
     HUMIDITY
 }
-

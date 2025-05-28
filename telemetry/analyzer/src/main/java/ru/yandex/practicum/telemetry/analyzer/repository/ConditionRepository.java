@@ -5,4 +5,3 @@ import ru.yandex.practicum.telemetry.analyzer.model.Condition;
 
 public interface ConditionRepository extends JpaRepository<Condition, Long> {
 }
-

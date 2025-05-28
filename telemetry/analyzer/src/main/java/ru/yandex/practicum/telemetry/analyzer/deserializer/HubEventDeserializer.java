@@ -24,4 +24,3 @@ public class HubEventDeserializer implements Deserializer<HubEventAvro> {
         }
     }
 }
-

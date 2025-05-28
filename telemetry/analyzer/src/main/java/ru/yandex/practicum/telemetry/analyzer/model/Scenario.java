@@ -46,4 +46,3 @@ public class Scenario {
     @MapKeyColumn(name = "sensor_id")
     private Map<String, Condition> conditions = new HashMap<>();
 }
-

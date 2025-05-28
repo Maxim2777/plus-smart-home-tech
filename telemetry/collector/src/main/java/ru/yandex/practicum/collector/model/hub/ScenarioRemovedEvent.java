@@ -21,4 +21,3 @@ public class ScenarioRemovedEvent extends HubEvent {
         return HubEventType.SCENARIO_REMOVED;
     }
 }
-

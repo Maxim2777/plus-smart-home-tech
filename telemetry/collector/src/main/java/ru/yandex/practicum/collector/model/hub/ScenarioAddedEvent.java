@@ -25,4 +25,3 @@ public class ScenarioAddedEvent extends HubEvent {
         return HubEventType.SCENARIO_ADDED;
     }
 }
-

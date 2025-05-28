@@ -15,4 +15,3 @@ public class TemperatureSensorEvent extends SensorEvent {
         return SensorEventType.TEMPERATURE_SENSOR_EVENT;
     }
 }
-
