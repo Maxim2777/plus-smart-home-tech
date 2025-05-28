@@ -121,12 +121,4 @@ public class ScenarioEvaluationService {
                 return null;
         }
     }
-
-    private Timestamp toProtoTimestamp(long millis) {
-        Instant instant = Instant.ofEpochMilli(millis);
-        return Timestamp.newBuilder()
-                .setSeconds(instant.getEpochSecond())
-                .setNanos(instant.getNano())
-                .build();
-    }
 }
