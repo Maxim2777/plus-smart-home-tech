@@ -27,12 +27,17 @@ public class EventController extends CollectorControllerImplBase {
 
     @Override
     public void collectSensorEvent(SensorEventProto request, StreamObserver<Empty> responseObserver) {
+        String hubId = request.getHubId();
+        String sensorId = request.getId();
+        log.info("📡 Получено SensorEvent: hubId={}, sensorId={}, timestamp={}", hubId, sensorId, request.getTimestamp());
+
         try {
             sensorEventService.handleSensorEvent(request);
+            log.info("✅ SensorEvent обработан: hubId={}, sensorId={}", hubId, sensorId);
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
         } catch (Exception e) {
-            log.error("Ошибка обработки sensorEvent", e);
+            log.error("❌ Ошибка обработки SensorEvent (hubId={}, sensorId={}): {}", hubId, sensorId, e.getMessage(), e);
             responseObserver.onError(new StatusRuntimeException(
                     Status.INTERNAL.withDescription(e.getMessage()).withCause(e)
             ));
@@ -41,12 +46,16 @@ public class EventController extends CollectorControllerImplBase {
 
     @Override
     public void collectHubEvent(HubEventProto request, StreamObserver<Empty> responseObserver) {
+        String hubId = request.getHubId();
+        log.info("📡 Получено HubEvent: hubId={}, timestamp={}", hubId, request.getTimestamp());
+
         try {
             hubEventService.handleHubEvent(request);
+            log.info("✅ HubEvent обработан: hubId={}", hubId);
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
         } catch (Exception e) {
-            log.error("Ошибка обработки hubEvent", e);
+            log.error("❌ Ошибка обработки HubEvent (hubId={}): {}", hubId, e.getMessage(), e);
             responseObserver.onError(new StatusRuntimeException(
                     Status.INTERNAL.withDescription(e.getMessage()).withCause(e)
             ));

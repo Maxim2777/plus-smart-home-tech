@@ -16,8 +16,6 @@ import ru.yandex.practicum.collector.model.sensor.TemperatureSensorEvent;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 
-
-
 import java.time.Instant;
 
 @Slf4j
@@ -27,51 +25,10 @@ public class SensorEventService {
 
     private final Producer<String, SpecificRecordBase> kafkaProducer;
 
-    public void processEvent(SensorEvent event) {
-        SensorEventAvro avro = mapToAvro(event);
-        log.info("SensorEvent отправляется в Kafka с payload: {}", avro.getPayload().getClass().getSimpleName());
-        kafkaProducer.send(new ProducerRecord<>("telemetry.sensors.v1", avro.getId(), avro));
-    }
-
-    private SensorEventAvro mapToAvro(SensorEvent event) {
-        Instant timestamp = event.getTimestamp() != null
-                ? event.getTimestamp()
-                : Instant.now();
-
-        SpecificRecord payload = switch (event.getType()) {
-            case LIGHT_SENSOR_EVENT -> LightSensorAvro.newBuilder()
-                    .setLinkQuality(((LightSensorEvent) event).getLinkQuality())
-                    .setLuminosity(((LightSensorEvent) event).getLuminosity())
-                    .build();
-            case MOTION_SENSOR_EVENT -> MotionSensorAvro.newBuilder()
-                    .setLinkQuality(((MotionSensorEvent) event).getLinkQuality())
-                    .setMotion(((MotionSensorEvent) event).isMotion())
-                    .setVoltage(((MotionSensorEvent) event).getVoltage())
-                    .build();
-            case TEMPERATURE_SENSOR_EVENT -> TemperatureSensorAvro.newBuilder()
-                    .setTemperatureC(((TemperatureSensorEvent) event).getTemperatureC())
-                    .setTemperatureF(((TemperatureSensorEvent) event).getTemperatureF())
-                    .build();
-            case CLIMATE_SENSOR_EVENT -> ClimateSensorAvro.newBuilder()
-                    .setTemperatureC(((ClimateSensorEvent) event).getTemperatureC())
-                    .setHumidity(((ClimateSensorEvent) event).getHumidity())
-                    .setCo2Level(((ClimateSensorEvent) event).getCo2Level())
-                    .build();
-            case SWITCH_SENSOR_EVENT -> SwitchSensorAvro.newBuilder()
-                    .setState(((SwitchSensorEvent) event).isState())
-                    .build();
-        };
-
-        return SensorEventAvro.newBuilder()
-                .setId(event.getId())
-                .setHubId(event.getHubId())
-                .setTimestamp(timestamp)
-                .setPayload(payload)
-                .build();
-    }
-
-
     public void handleSensorEvent(SensorEventProto proto) {
+        log.info("📨 Получен SensorEventProto: id={}, hubId={}, payloadType={}",
+                proto.getId(), proto.getHubId(), proto.getPayloadCase().name());
+
         SensorEvent event;
 
         Instant timestamp = Instant.ofEpochSecond(
@@ -112,16 +69,61 @@ public class SensorEventService {
                 event = s;
             }
             default -> {
-                log.warn("Неизвестный payload: {}", proto.getPayloadCase());
+                log.warn("⚠️ Неизвестный payload в SensorEventProto: {}", proto.getPayloadCase());
                 return;
             }
         }
 
-        // общие поля
         event.setId(proto.getId());
         event.setHubId(proto.getHubId());
         event.setTimestamp(timestamp);
 
+        log.debug("🛠️ Преобразован SensorEvent: id={}, hubId={}, type={}", event.getId(), event.getHubId(), event.getType());
         processEvent(event);
+    }
+
+    public void processEvent(SensorEvent event) {
+        SensorEventAvro avro = mapToAvro(event);
+        log.info("📤 Отправка SensorEvent в Kafka: id={}, hubId={}, type={}, payload={}",
+                avro.getId(), avro.getHubId(), event.getType(), avro.getPayload().getClass().getSimpleName());
+
+        kafkaProducer.send(new ProducerRecord<>("telemetry.sensors.v1", avro.getId(), avro));
+    }
+
+    private SensorEventAvro mapToAvro(SensorEvent event) {
+        Instant timestamp = event.getTimestamp() != null
+                ? event.getTimestamp()
+                : Instant.now();
+
+        SpecificRecord payload = switch (event.getType()) {
+            case LIGHT_SENSOR_EVENT -> LightSensorAvro.newBuilder()
+                    .setLinkQuality(((LightSensorEvent) event).getLinkQuality())
+                    .setLuminosity(((LightSensorEvent) event).getLuminosity())
+                    .build();
+            case MOTION_SENSOR_EVENT -> MotionSensorAvro.newBuilder()
+                    .setLinkQuality(((MotionSensorEvent) event).getLinkQuality())
+                    .setMotion(((MotionSensorEvent) event).isMotion())
+                    .setVoltage(((MotionSensorEvent) event).getVoltage())
+                    .build();
+            case TEMPERATURE_SENSOR_EVENT -> TemperatureSensorAvro.newBuilder()
+                    .setTemperatureC(((TemperatureSensorEvent) event).getTemperatureC())
+                    .setTemperatureF(((TemperatureSensorEvent) event).getTemperatureF())
+                    .build();
+            case CLIMATE_SENSOR_EVENT -> ClimateSensorAvro.newBuilder()
+                    .setTemperatureC(((ClimateSensorEvent) event).getTemperatureC())
+                    .setHumidity(((ClimateSensorEvent) event).getHumidity())
+                    .setCo2Level(((ClimateSensorEvent) event).getCo2Level())
+                    .build();
+            case SWITCH_SENSOR_EVENT -> SwitchSensorAvro.newBuilder()
+                    .setState(((SwitchSensorEvent) event).isState())
+                    .build();
+        };
+
+        return SensorEventAvro.newBuilder()
+                .setId(event.getId())
+                .setHubId(event.getHubId())
+                .setTimestamp(timestamp)
+                .setPayload(payload)
+                .build();
     }
 }
