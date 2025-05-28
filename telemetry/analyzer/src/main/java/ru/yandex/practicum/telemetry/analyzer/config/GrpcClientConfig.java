@@ -1,7 +1,6 @@
 package ru.yandex.practicum.telemetry.analyzer.config;
 
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
+import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ru.yandex.practicum.grpc.telemetry.hubrouter.HubRouterControllerGrpc;
@@ -9,13 +8,11 @@ import ru.yandex.practicum.grpc.telemetry.hubrouter.HubRouterControllerGrpc;
 @Configuration
 public class GrpcClientConfig {
 
+    @GrpcClient("hub-router")
+    private HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterStub;
+
     @Bean
     public HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterStub() {
-        ManagedChannel channel = ManagedChannelBuilder
-                .forAddress("localhost", 59090)
-                .usePlaintext()
-                .build();
-
-        return HubRouterControllerGrpc.newBlockingStub(channel);
+        return hubRouterStub;
     }
 }
