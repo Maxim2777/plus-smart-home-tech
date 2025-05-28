@@ -5,13 +5,13 @@ protocol SensorEvent {
   record ClimateSensorAvro {
     int temperature_c;  // Температура в градусах Цельсия
     int humidity;       // Влажность в процентах
-    int co2_level;      // Уровень CO2 (ppm)
+    int co2_level;      // Уровень CO2
   }
 
   /** Данные от сенсора освещённости */
   record LightSensorAvro {
     int link_quality;   // Качество сигнала
-    int luminosity;     // Уровень освещённости (люксы)
+    int luminosity;     // Уровень освещённости
   }
 
   /** Данные от сенсора движения */
@@ -28,8 +28,8 @@ protocol SensorEvent {
 
   /** Температурный сенсор */
   record TemperatureSensorAvro {
-    int temperature_c;  // Температура в Цельсиях
-    int temperature_f;  // Температура в Фаренгейтах
+    int temperature_c;
+    int temperature_f;
   }
 
   /** Событие от любого сенсора */
