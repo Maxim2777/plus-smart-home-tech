@@ -1,6 +1,7 @@
 package ru.yandex.practicum.aggregator.consumer;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -14,6 +15,7 @@ import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class SensorEventHandler {
@@ -25,10 +27,22 @@ public class SensorEventHandler {
     private final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
 
     public void handle(ConsumerRecords<String, SensorEventAvro> records) {
+        log.info("🔄 Получен пакет сообщений из Kafka: {} записей", records.count());
+
         for (ConsumerRecord<String, SensorEventAvro> record : records) {
-            aggregationService.aggregateEvent(record.value())
-                    .ifPresent(snapshot ->
-                            producer.send("telemetry.snapshots.v1", snapshot.getHubId(), snapshot)
+            SensorEventAvro event = record.value();
+            String hubId = event.getHubId();
+            String sensorId = event.getId();
+
+            log.debug("⚙️ Обработка события от сенсора [{}] хаба [{}] (offset={})", sensorId, hubId, record.offset());
+
+            aggregationService.aggregateEvent(event)
+                    .ifPresentOrElse(
+                            snapshot -> {
+                                log.info("📤 Отправка обновлённого снапшота хаба [{}] в Kafka", snapshot.getHubId());
+                                producer.send("telemetry.snapshots.v1", snapshot.getHubId(), snapshot);
+                            },
+                            () -> log.debug("⏭ Пропущено событие от сенсора [{}] хаба [{}] (неактуально)", sensorId, hubId)
                     );
 
             currentOffsets.put(
@@ -41,10 +55,12 @@ public class SensorEventHandler {
     }
 
     private void commitOffsets() {
+        log.debug("✅ Коммит смещений (асинхронно): {}", currentOffsets);
         consumer.commitAsync(currentOffsets, null);
     }
 
     public void shutdown() {
+        log.info("🛑 Завершение работы SensorEventHandler: коммит и закрытие Kafka consumer");
         consumer.commitSync(currentOffsets);
         consumer.close();
     }
