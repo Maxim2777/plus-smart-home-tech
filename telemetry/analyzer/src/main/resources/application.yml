@@ -27,19 +27,3 @@ grpc:
       negotiationType: plaintext
       enableKeepAlive: true
       keepAliveWithoutCalls: true
-
-analyzer:
-  kafka:
-    consumer:
-      bootstrap-servers: localhost:9092
-      group-id: analyzer-snapshot-events
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: ru.yandex.practicum.telemetry.analyzer.deserializer.SensorsSnapshotDeserializer
-
-    hub-consumer:
-      bootstrap-servers: localhost:9092
-      group-id: analyzer-hub-events
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: ru.yandex.practicum.telemetry.analyzer.deserializer.HubEventDeserializer
