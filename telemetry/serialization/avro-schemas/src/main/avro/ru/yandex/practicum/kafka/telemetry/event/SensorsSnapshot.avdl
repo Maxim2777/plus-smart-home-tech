@@ -3,20 +3,24 @@ protocol SensorsSnapshotProtocol {
 
 	import idl "SensorEvent.avdl";
 
+	/** Снимок состояния всех сенсоров в конкретном хабе на заданный момент времени */
 	record SensorsSnapshotAvro {
-		string hubId;
-		timestamp_ms timestamp;
-		map<SensorStateAvro> sensorsState;
+		string hubId;                             // ID хаба, которому принадлежат сенсоры
+		timestamp_ms timestamp;                   // Время формирования снимка
+		map<SensorStateAvro> sensorsState;        // Состояния всех сенсоров (ключ — sensorId)
 	}
 
+	/** Последнее известное состояние одного сенсора */
 	record SensorStateAvro {
-		timestamp_ms timestamp;
+		timestamp_ms timestamp;                   // Время получения данных от сенсора
+
+		/** Данные одного из типов сенсоров */
 		union {
-			ClimateSensorAvro,
-			LightSensorAvro,
-			MotionSensorAvro,
-			SwitchSensorAvro,
-			TemperatureSensorAvro
+			ClimateSensorAvro,                      // Данные климатического сенсора
+			LightSensorAvro,                        // Данные сенсора освещённости
+			MotionSensorAvro,                       // Данные сенсора движения
+			SwitchSensorAvro,                       // Состояние переключателя
+			TemperatureSensorAvro                   // Температура
 		} data;
 	}
 }

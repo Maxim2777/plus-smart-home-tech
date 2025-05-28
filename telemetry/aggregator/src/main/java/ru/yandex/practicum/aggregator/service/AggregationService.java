@@ -16,7 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AggregationService {
 
-    private final Map<String, SensorsSnapshotAvro> snapshotsByHubId = new HashMap<>(); // key = hubId
+    private final Map<String, SensorsSnapshotAvro> snapshotsByHubId = new HashMap<>();
 
     public Optional<SensorsSnapshotAvro> aggregateEvent(SensorEventAvro event) {
         String hubId = event.getHubId();
@@ -33,7 +33,7 @@ public class AggregationService {
             return newSnapshot;
         });
 
-        Map<String, SensorStateAvro> sensorsState = hubSnapshot.getSensorsState(); // key = sensorId
+        Map<String, SensorStateAvro> sensorsState = hubSnapshot.getSensorsState();
         SensorStateAvro oldState = sensorsState.get(sensorId);
 
         if (oldState != null) {
