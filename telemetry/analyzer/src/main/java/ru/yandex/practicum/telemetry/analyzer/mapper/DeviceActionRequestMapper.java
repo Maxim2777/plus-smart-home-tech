@@ -8,7 +8,6 @@ import ru.yandex.practicum.telemetry.analyzer.model.Action;
 import ru.yandex.practicum.telemetry.analyzer.model.Scenario;
 
 import java.time.Instant;
-import java.util.List;
 
 public class DeviceActionRequestMapper {
 
@@ -27,12 +26,6 @@ public class DeviceActionRequestMapper {
                 .setAction(actionBuilder.build())
                 .setTimestamp(currentTimestamp())
                 .build();
-    }
-
-    public static List<DeviceActionRequest> mapAll(Scenario scenario, String hubId) {
-        return scenario.getActions().entrySet().stream()
-                .map(entry -> map(scenario, hubId, entry.getKey(), entry.getValue()))
-                .toList();
     }
 
     private static Timestamp currentTimestamp() {
