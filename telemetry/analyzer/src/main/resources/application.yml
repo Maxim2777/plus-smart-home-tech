@@ -30,7 +30,7 @@ grpc:
 
 analyzer:
   kafka:
-    snapshot-consumer:
+    consumer:
       bootstrap-servers: localhost:9092
       group-id: analyzer-snapshot-events
       auto-offset-reset: earliest
