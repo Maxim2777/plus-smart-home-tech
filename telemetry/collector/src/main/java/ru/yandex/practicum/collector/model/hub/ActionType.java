@@ -6,4 +6,3 @@ public enum ActionType {
     INVERSE,
     SET_VALUE
 }
-

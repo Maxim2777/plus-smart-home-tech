@@ -1,76 +1,87 @@
 @namespace("ru.yandex.practicum.kafka.telemetry.event")
 protocol HubEvent {
 
+	/** Тип устройства, добавленного в систему */
 	enum DeviceTypeAvro {
-		MOTION_SENSOR,
-		TEMPERATURE_SENSOR,
-		LIGHT_SENSOR,
-		CLIMATE_SENSOR,
-		SWITCH_SENSOR
+		MOTION_SENSOR,        // Датчик движения
+		TEMPERATURE_SENSOR,   // Температурный датчик
+		LIGHT_SENSOR,         // Датчик освещённости
+		CLIMATE_SENSOR,       // Климатический датчик (темп. + влажность + CO2)
+		SWITCH_SENSOR         // Переключатель (вкл/выкл)
 	}
 
+	/** Тип проверяемого условия в сценарии */
 	enum ConditionTypeAvro {
-		MOTION,
-		LUMINOSITY,
-		SWITCH,
-		TEMPERATURE,
-		CO2LEVEL,
-		HUMIDITY
+		MOTION,          // Движение
+		LUMINOSITY,      // Освещённость
+		SWITCH,          // Состояние переключателя
+		TEMPERATURE,     // Температура
+		CO2LEVEL,        // Уровень CO2
+		HUMIDITY         // Влажность
 	}
 
+	/** Операция сравнения для условия */
 	enum ConditionOperationAvro {
-		EQUALS,
-		GREATER_THAN,
-		LOWER_THAN
+		EQUALS,         // Равно
+		GREATER_THAN,   // Больше
+		LOWER_THAN      // Меньше
 	}
 
+	/** Тип действия, выполняемого в сценарии */
 	enum ActionTypeAvro {
-		ACTIVATE,
-		DEACTIVATE,
-		INVERSE,
-		SET_VALUE
+		ACTIVATE,     // Включить устройство
+		DEACTIVATE,   // Выключить устройство
+		INVERSE,      // Инвертировать состояние
+		SET_VALUE     // Установить значение
 	}
 
+	/** Событие добавления устройства в хаб */
 	record DeviceAddedEventAvro {
-		string id;
-		DeviceTypeAvro type;
+		string id;                // ID устройства
+		DeviceTypeAvro type;      // Тип устройства
 	}
 
+	/** Событие удаления устройства из хаба */
 	record DeviceRemovedEventAvro {
-		string id;
+		string id;                // ID устройства
 	}
 
+	/** Условие сценария */
 	record ScenarioConditionAvro {
-		string sensor_id;
-		ConditionTypeAvro type;
-		ConditionOperationAvro operation;
-		union { null, int, boolean } value = null;
+		string sensor_id;                  // ID сенсора
+		ConditionTypeAvro type;            // Что проверяем
+		ConditionOperationAvro operation;  // Как сравниваем
+		union { null, int, boolean } value = null; // С чем сравниваем
 	}
 
+	/** Действие в сценарии */
 	record DeviceActionAvro {
-		string sensor_id;
-		ActionTypeAvro type;
-		union { null, int } value = null;
+		string sensor_id;          // Сенсор, на который действует команда
+		ActionTypeAvro type;       // Что делать
+		union { null, int } value = null; // Доп. значение (если нужно)
 	}
 
+	/** Сценарий добавлен в хаб */
 	record ScenarioAddedEventAvro {
-		string name;
-		array<ScenarioConditionAvro> conditions;
-		array<DeviceActionAvro> actions;
+		string name;                              // Название сценария
+		array<ScenarioConditionAvro> conditions;  // Условия
+		array<DeviceActionAvro> actions;          // Действия
 	}
 
+	/** Сценарий удалён из хаба */
 	record ScenarioRemovedEventAvro {
-		string name;
+		string name;  // Название сценария
 	}
 
+	/** Общее событие от хаба */
 	record HubEventAvro {
-		string hub_id;
-		long timestamp;
+		string hub_id;   // ID хаба
+		long timestamp;  // Время события (millis)
 		union {
 			DeviceAddedEventAvro,
 			DeviceRemovedEventAvro,
 			ScenarioAddedEventAvro,
 			ScenarioRemovedEventAvro
-		} payload;
+		} payload;       // Конкретный тип события
 	}
 }

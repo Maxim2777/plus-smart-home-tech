@@ -4,8 +4,8 @@ services:
     hostname: kafka
     container_name: kafka
     ports:
-      - "9092:9092" # for client connections
-      - "9101:9101" # JMX
+      - "9092:9092"
+      - "9101:9101"
     restart: unless-stopped
     environment:
       KAFKA_NODE_ID: 1
@@ -45,3 +45,19 @@ services:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:29092
+
+#  telemetry-postgres:
+#    image: postgres:15
+#    container_name: telemetry-postgres
+#    restart: always
+#    environment:
+#      POSTGRES_DB: telemetry_analyzer
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: shareit
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - telemetry_pgdata:/var/lib/postgresql/data
+
+#volumes:
+#  telemetry_pgdata:
