@@ -14,6 +14,18 @@
 
     <dependencies>
 
+        <!-- ✅ Spring Cloud Config Client -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+        </dependency>
+
+        <!-- ✅ Spring Retry (для поддержки повторных попыток подключения к Config Server) -->
+        <dependency>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>net.devh</groupId>
             <artifactId>grpc-server-spring-boot-starter</artifactId>
@@ -25,7 +37,6 @@
             <artifactId>proto-schemas</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
 
         <!-- Avro-схемы из соседнего модуля -->
         <dependency>
