@@ -3,7 +3,7 @@ spring:
     name: aggregator
 
   config:
-    import: configserver:http://localhost:8888
+    import: "configserver:"
 
   cloud:
     config:
@@ -11,6 +11,9 @@ spring:
       retry:
         useRandomPolicy: true
         max-interval: 6000
+      discovery:
+        enabled: true
+        serviceId: config-server
 
 eureka:
   client:
