@@ -8,8 +8,8 @@ spring:
     password: postgres
   jpa:
     hibernate:
-      ddl-auto: none         # ❌ отключаем автоматическое создание таблиц
+      ddl-auto: none         # отключаем автоматическое создание таблиц
     show-sql: true
   sql:
     init:
-      mode: always           # ✅ включаем выполнение schema.sql
+      mode: always           # включаем выполнение schema.sql
