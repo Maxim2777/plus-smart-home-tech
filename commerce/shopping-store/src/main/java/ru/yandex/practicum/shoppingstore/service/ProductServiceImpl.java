@@ -36,7 +36,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto createProduct(ProductDto productDto) {
         Product product = mapper.toEntity(productDto);
-        product.setProductState(ProductState.ACTIVE);
+
+        // Если productState явно не задан — ставим ACTIVE
+        if (product.getProductState() == null) {
+            product.setProductState(ProductState.ACTIVE);
+        }
+
         return mapper.toDto(repository.save(product));
     }
 
