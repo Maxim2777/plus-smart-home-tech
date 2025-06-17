@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.shoppingstore.dto.ProductDto;
 import ru.yandex.practicum.shoppingstore.model.ProductCategory;
+import ru.yandex.practicum.shoppingstore.model.QuantityState;
 import ru.yandex.practicum.shoppingstore.model.SetProductQuantityStateRequest;
 import ru.yandex.practicum.shoppingstore.service.ProductService;
 
@@ -20,9 +21,10 @@ public class ProductController {
 
     @GetMapping
     public Page<ProductDto> getProducts(@RequestParam ProductCategory category,
-                                        @RequestParam int page,
-                                        @RequestParam int size) {
-        return service.getProductsByCategory(category, PageRequest.of(page, size));
+                                        @RequestParam(defaultValue = "0") int page,
+                                        @RequestParam(defaultValue = "10") int size,
+                                        @RequestParam(defaultValue = "productName") String sort) {
+        return service.getProductsByCategory(category, PageRequest.of(page, size, org.springframework.data.domain.Sort.by(sort)));
     }
 
     @PutMapping
@@ -41,8 +43,11 @@ public class ProductController {
     }
 
     @PostMapping("/quantityState")
-    public boolean setProductQuantityState(@RequestBody SetProductQuantityStateRequest request) {
-        return service.updateProductQuantityState(request);
+    public boolean setProductQuantityState(@RequestParam UUID productId,
+                                           @RequestParam String quantityState) {
+        return service.updateProductQuantityState(
+                new SetProductQuantityStateRequest(productId, QuantityState.valueOf(quantityState))
+        );
     }
 
     @GetMapping("/{productId}")
