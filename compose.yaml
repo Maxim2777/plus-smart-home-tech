@@ -46,6 +46,37 @@ services:
       SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:29092
 
+  shopping-store-db:
+    image: postgres:16.1
+    container_name: shopping-store-db
+    ports:
+      - "7432:5432"
+    environment:
+      POSTGRES_DB: shopping_store_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  shopping-cart-db:
+    image: postgres:16.1
+    container_name: shopping-cart-db
+    ports:
+      - "8432:5432"
+    environment:
+      POSTGRES_DB: shopping_cart_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  warehouse-db:
+    image: postgres:16.1
+    container_name: warehouse-db
+    ports:
+      - "9432:5432"
+    environment:
+      POSTGRES_DB: warehouse_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+
 #  telemetry-postgres:
 #    image: postgres:15
 #    container_name: telemetry-postgres
