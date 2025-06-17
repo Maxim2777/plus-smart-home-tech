@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://shopping-cart-db:5432/shopping_cart_db
+    url: jdbc:postgresql://localhost:8432/shopping_cart_db
     username: postgres
     password: postgres
   jpa:

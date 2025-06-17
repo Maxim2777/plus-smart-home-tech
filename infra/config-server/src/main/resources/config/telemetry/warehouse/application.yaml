@@ -1,0 +1,15 @@
+server:
+  port: 0
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:9432/warehouse_db
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: none         # ❌ отключаем автоматическое создание таблиц
+    show-sql: true
+  sql:
+    init:
+      mode: always           # ✅ включаем выполнение schema.sql
