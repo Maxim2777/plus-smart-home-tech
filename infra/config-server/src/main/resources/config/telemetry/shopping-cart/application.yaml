@@ -1,0 +1,15 @@
+server:
+  port: 0
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:8432/shopping_cart_db
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: none         # Hibernate не создаёт/обновляет таблицы
+    show-sql: true
+  sql:
+    init:
+      mode: always           # schema.sql будет выполняться при старте

@@ -1,0 +1,15 @@
+server:
+  port: 0
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:7432/shopping_store_db
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: none  # Отключаем авто-DDL Hibernate
+    show-sql: true
+  sql:
+    init:
+      mode: always  # Запускаем schema.sql при старте
