@@ -1,0 +1,33 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: order
+
+  datasource:
+    url: jdbc:postgresql://localhost:10432/orderdb
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+  sql:
+    init:
+      mode: always
+
+  cloud:
+    config:
+      enabled: false
+
+  config:
+    import: "optional:configserver:"
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
