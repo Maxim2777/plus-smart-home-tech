@@ -34,5 +34,10 @@ spring:
           predicates:
             - Path=/api/v1/delivery/**
 
+        - id: warehouse_route
+          uri: lb://warehouse
+          predicates:
+            - Path=/api/v1/warehouse/**
+
 server:
   port: 8889

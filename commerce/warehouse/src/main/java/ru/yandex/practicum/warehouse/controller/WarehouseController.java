@@ -35,5 +35,14 @@ public class WarehouseController {
     public AddressDto getWarehouseAddress() {
         return service.getWarehouseAddress();
     }
-}
 
+    @PostMapping("/assembly")
+    public BookedProductsDto assemble(@RequestBody AssemblyRequest request) {
+        return service.assembleProducts(request);
+    }
+
+    @PostMapping("/shipped")
+    public void markAsShipped(@RequestBody ShipmentRequest request) {
+        service.markAsShipped(request);
+    }
+}

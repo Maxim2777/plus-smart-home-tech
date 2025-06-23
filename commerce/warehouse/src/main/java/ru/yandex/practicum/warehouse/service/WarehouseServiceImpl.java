@@ -7,6 +7,7 @@ import ru.yandex.practicum.warehouse.dto.*;
 import ru.yandex.practicum.warehouse.model.Dimension;
 import ru.yandex.practicum.warehouse.model.WarehouseProduct;
 import ru.yandex.practicum.warehouse.repository.WarehouseProductRepository;
+import java.util.stream.Collectors;
 
 import java.security.SecureRandom;
 import java.util.Map;
@@ -91,5 +92,28 @@ public class WarehouseServiceImpl implements WarehouseService {
     @Override
     public AddressDto getWarehouseAddress() {
         return new AddressDto(currentAddress, currentAddress, currentAddress, currentAddress, currentAddress);
+    }
+
+    @Override
+    public BookedProductsDto assembleProducts(AssemblyRequest request) {
+        Map<UUID, Long> converted = request.getProducts().entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> e.getValue().longValue()
+                ));
+
+        ShoppingCartDto cart = new ShoppingCartDto();
+        cart.setProducts(converted);
+        return checkAvailabilityAndBook(cart);
+    }
+
+    @Override
+    public void markAsShipped(ShipmentRequest request) {
+        OrderBooking booking = bookings.get(request.getOrderId());
+        if (booking == null) {
+            throw new IllegalArgumentException("No booking found for order " + request.getOrderId());
+        }
+        booking.setDeliveryId(request.getDeliveryId());
+        System.out.println("Order " + request.getOrderId() + " marked as shipped with delivery " + request.getDeliveryId());
     }
 }
