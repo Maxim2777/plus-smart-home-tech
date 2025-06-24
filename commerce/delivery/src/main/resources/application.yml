@@ -1,36 +1,24 @@
-server:
-  port: 0
-
 spring:
   application:
     name: delivery
-
-  datasource:
-    url: jdbc:postgresql://localhost:12432/deliverydb
-    username: postgres
-    password: postgres
-    driver-class-name: org.postgresql.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: none
-    show-sql: true
-
-  sql:
-    init:
-      mode: always
-
+  config:
+    import: "configserver:"
   cloud:
     config:
-      enabled: false
-
-  config:
-    import: "optional:configserver:"
+      fail-fast: true
+      discovery:
+        enabled: true
+        serviceId: config-server
+      retry:
+        useRandomPolicy: true
+        max-interval: 6000
 
 eureka:
   instance:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
     prefer-ip-address: true
   client:
+    healthcheck:
+      enabled: true
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://localhost:8761/eureka
