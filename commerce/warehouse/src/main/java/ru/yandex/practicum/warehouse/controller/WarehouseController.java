@@ -45,4 +45,9 @@ public class WarehouseController {
     public void markAsShipped(@RequestBody ShipmentRequest request) {
         service.markAsShipped(request);
     }
+
+    @PostMapping("/return")
+    public void returnProducts(@RequestBody ReturnRequest request) {
+        service.returnProducts(request);
+    }
 }

@@ -1,15 +1,16 @@
-package ru.yandex.practicum.order.client;
+package ru.yandex.practicum.warehouse.dto;
 
 import lombok.*;
 
 import java.util.Map;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AssemblyRequest {
+@Builder
+public class ReturnRequest {
     private UUID orderId;
     private Map<UUID, Integer> products;
 }
-

@@ -16,7 +16,7 @@ public interface DeliveryClient {
     @PutMapping("/api/v1/delivery")
     OrderDto planDelivery(@RequestBody OrderDto order);
 
-    @PostMapping("/api/v1/delivery/successful")
+    @PostMapping("/api/v1/delivery/picked")
     void markDelivered(@RequestBody UUID orderId);
 
     @PostMapping("/api/v1/delivery/failed")

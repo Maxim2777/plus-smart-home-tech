@@ -7,6 +7,8 @@ import ru.yandex.practicum.warehouse.dto.*;
 import ru.yandex.practicum.warehouse.model.Dimension;
 import ru.yandex.practicum.warehouse.model.WarehouseProduct;
 import ru.yandex.practicum.warehouse.repository.WarehouseProductRepository;
+
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import java.security.SecureRandom;
@@ -18,6 +20,7 @@ import java.util.UUID;
 public class WarehouseServiceImpl implements WarehouseService {
 
     private final WarehouseProductRepository repository;
+    private final Map<UUID, OrderBooking> bookings = new HashMap<>(); // <-- добавлено
 
     private static final String[] ADDRESSES = {"ADDRESS_1", "ADDRESS_2"};
     private static String currentAddress;
@@ -104,7 +107,12 @@ public class WarehouseServiceImpl implements WarehouseService {
 
         ShoppingCartDto cart = new ShoppingCartDto();
         cart.setProducts(converted);
-        return checkAvailabilityAndBook(cart);
+
+        BookedProductsDto booked = checkAvailabilityAndBook(cart);
+
+        bookings.put(request.getOrderId(), new OrderBooking(request.getOrderId(), null, converted)); // сохраняем бронь
+
+        return booked;
     }
 
     @Override
@@ -115,5 +123,16 @@ public class WarehouseServiceImpl implements WarehouseService {
         }
         booking.setDeliveryId(request.getDeliveryId());
         System.out.println("Order " + request.getOrderId() + " marked as shipped with delivery " + request.getDeliveryId());
+    }
+
+    @Override
+    public void returnProducts(ReturnRequest request) {
+        for (Map.Entry<UUID, Integer> entry : request.getProducts().entrySet()) {
+            WarehouseProduct product = repository.findById(entry.getKey())
+                    .orElseThrow(() -> new IllegalArgumentException("Product not found: " + entry.getKey()));
+            product.setQuantity(product.getQuantity() + entry.getValue());
+            repository.save(product);
+        }
+        System.out.println("Products returned for order: " + request.getOrderId());
     }
 }

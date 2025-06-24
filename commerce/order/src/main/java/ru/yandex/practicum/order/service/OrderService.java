@@ -11,7 +11,7 @@ import ru.yandex.practicum.order.entity.OrderEntity;
 import ru.yandex.practicum.order.entity.OrderState;
 import ru.yandex.practicum.order.mapper.OrderMapper;
 import ru.yandex.practicum.order.repository.OrderRepository;
-import ru.yandex.practicum.order.client.AssemblyRequest;
+import ru.yandex.practicum.order.dto.AssemblyRequest;
 
 
 import java.math.BigDecimal;

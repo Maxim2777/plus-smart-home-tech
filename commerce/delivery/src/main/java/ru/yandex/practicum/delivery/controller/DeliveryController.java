@@ -21,6 +21,7 @@ public class DeliveryController {
 
     @PostMapping("/cost")
     public double calculateDeliveryCost(@RequestBody DeliveryDto dto) {
+        System.out.println("Расчёт стоимости");
         return service.calculateCost(dto);
     }
 

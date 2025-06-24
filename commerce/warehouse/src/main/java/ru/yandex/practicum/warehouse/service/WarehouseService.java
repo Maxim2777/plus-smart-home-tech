@@ -15,4 +15,6 @@ public interface WarehouseService {
     BookedProductsDto assembleProducts(AssemblyRequest request);
 
     void markAsShipped(ShipmentRequest request);
+
+    void returnProducts(ReturnRequest request); // <-- добавлен
 }
