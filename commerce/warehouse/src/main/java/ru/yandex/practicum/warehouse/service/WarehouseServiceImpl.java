@@ -20,7 +20,7 @@ import java.util.UUID;
 public class WarehouseServiceImpl implements WarehouseService {
 
     private final WarehouseProductRepository repository;
-    private final Map<UUID, OrderBooking> bookings = new HashMap<>(); // <-- добавлено
+    private final Map<UUID, OrderBooking> bookings = new HashMap<>();
 
     private static final String[] ADDRESSES = {"ADDRESS_1", "ADDRESS_2"};
     private static String currentAddress;

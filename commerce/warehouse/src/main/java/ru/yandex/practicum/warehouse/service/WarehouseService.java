@@ -16,5 +16,5 @@ public interface WarehouseService {
 
     void markAsShipped(ShipmentRequest request);
 
-    void returnProducts(ReturnRequest request); // <-- добавлен
+    void returnProducts(ReturnRequest request);
 }
