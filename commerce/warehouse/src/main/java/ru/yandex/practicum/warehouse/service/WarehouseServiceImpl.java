@@ -8,6 +8,9 @@ import ru.yandex.practicum.warehouse.model.Dimension;
 import ru.yandex.practicum.warehouse.model.WarehouseProduct;
 import ru.yandex.practicum.warehouse.repository.WarehouseProductRepository;
 
+import java.util.HashMap;
+import java.util.stream.Collectors;
+
 import java.security.SecureRandom;
 import java.util.Map;
 import java.util.UUID;
@@ -17,6 +20,7 @@ import java.util.UUID;
 public class WarehouseServiceImpl implements WarehouseService {
 
     private final WarehouseProductRepository repository;
+    private final Map<UUID, OrderBooking> bookings = new HashMap<>();
 
     private static final String[] ADDRESSES = {"ADDRESS_1", "ADDRESS_2"};
     private static String currentAddress;
@@ -91,5 +95,44 @@ public class WarehouseServiceImpl implements WarehouseService {
     @Override
     public AddressDto getWarehouseAddress() {
         return new AddressDto(currentAddress, currentAddress, currentAddress, currentAddress, currentAddress);
+    }
+
+    @Override
+    public BookedProductsDto assembleProducts(AssemblyRequest request) {
+        Map<UUID, Long> converted = request.getProducts().entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> e.getValue().longValue()
+                ));
+
+        ShoppingCartDto cart = new ShoppingCartDto();
+        cart.setProducts(converted);
+
+        BookedProductsDto booked = checkAvailabilityAndBook(cart);
+
+        bookings.put(request.getOrderId(), new OrderBooking(request.getOrderId(), null, converted)); // сохраняем бронь
+
+        return booked;
+    }
+
+    @Override
+    public void markAsShipped(ShipmentRequest request) {
+        OrderBooking booking = bookings.get(request.getOrderId());
+        if (booking == null) {
+            throw new IllegalArgumentException("No booking found for order " + request.getOrderId());
+        }
+        booking.setDeliveryId(request.getDeliveryId());
+        System.out.println("Order " + request.getOrderId() + " marked as shipped with delivery " + request.getDeliveryId());
+    }
+
+    @Override
+    public void returnProducts(ReturnRequest request) {
+        for (Map.Entry<UUID, Integer> entry : request.getProducts().entrySet()) {
+            WarehouseProduct product = repository.findById(entry.getKey())
+                    .orElseThrow(() -> new IllegalArgumentException("Product not found: " + entry.getKey()));
+            product.setQuantity(product.getQuantity() + entry.getValue());
+            repository.save(product);
+        }
+        System.out.println("Products returned for order: " + request.getOrderId());
     }
 }

@@ -76,6 +76,35 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
 
+  order-db:
+    image: postgres:16.1
+    container_name: order-db
+    ports:
+      - "10432:5432"
+    environment:
+      POSTGRES_DB: orderdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  payment-db:
+    image: postgres:16.1
+    container_name: payment-db
+    ports:
+      - "11432:5432"
+    environment:
+      POSTGRES_DB: paymentdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  delivery-db:
+    image: postgres:16.1
+    container_name: delivery-db
+    ports:
+      - "12432:5432"
+    environment:
+      POSTGRES_DB: deliverydb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
 
 #  telemetry-postgres:
 #    image: postgres:15

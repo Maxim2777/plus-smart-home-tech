@@ -11,4 +11,10 @@ public interface WarehouseService {
     BookedProductsDto checkAvailabilityAndBook(ShoppingCartDto cart);
 
     AddressDto getWarehouseAddress();
+
+    BookedProductsDto assembleProducts(AssemblyRequest request);
+
+    void markAsShipped(ShipmentRequest request);
+
+    void returnProducts(ReturnRequest request);
 }

@@ -1,26 +1,43 @@
 spring:
   cloud:
     gateway:
-      discovery.locator.enabled: true
+      discovery.locator.enabled: false
       routes:
         - id: shopping_cart_route
           uri: lb://shopping-cart
           predicates:
-            - Path=/shopping-cart/**
-          filters:
-            - PrefixPath=/api/v1
+            - Path=/api/v1/shopping-cart/**
 
         - id: shopping_store_route
           uri: lb://shopping-store
           predicates:
-            - Path=/shopping-store/**
+            - Path=/api/v1/shopping-store/**
           filters:
-            - PrefixPath=/api/v1
             - name: Retry
               args:
                 retries: 3
                 statuses: BAD_GATEWAY,NOT_FOUND
                 methods: GET
+
+        - id: order_route
+          uri: lb://order
+          predicates:
+            - Path=/api/v1/order/**
+
+        - id: payment_route
+          uri: lb://payment
+          predicates:
+            - Path=/api/v1/payment/**
+
+        - id: delivery_route
+          uri: lb://delivery
+          predicates:
+            - Path=/api/v1/delivery/**
+
+        - id: warehouse_route
+          uri: lb://warehouse
+          predicates:
+            - Path=/api/v1/warehouse/**
 
 server:
   port: 8889
